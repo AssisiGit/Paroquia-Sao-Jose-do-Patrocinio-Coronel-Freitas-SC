@@ -1,338 +1,203 @@
-// app/page.tsx
-import Link from 'next/link';
-import { format, isToday, isTomorrow } from 'date-fns';
-import { ptBR } from 'date-fns/locale/pt-BR';
-// ATENÇÃO: Verifique se o caminho de importação do seu client do Sanity está correto
-import { client } from '../../lib/sanity'; 
+// app/sobre/SobreClient.tsx
+'use client';
 
-// =========================================
-// FUNÇÕES DE BUSCA NO SANITY
-// =========================================
-async function getUltimasNoticias() {
-  const query = `*[_type == "noticia"] | order(dataPublicacao desc)[0...4] {
-    _id,
-    titulo,
-    resumo,
-    dataPublicacao,
-    "imagemUrl": imagemPrincipal.asset->url,
-    "slug": slug.current
-  }`;
-  return client.fetch(query, {}, { next: { revalidate: 60 } }); // Atualiza a cada 60s
+import { useState } from 'react';
+
+// Nova Interface para os Frades
+interface Frade {
+  nome: string;
+  funcao: string;
+  fotoUrl?: string;
+  historia?: string;
 }
 
-async function getProximosEventos() {
-  // Pega eventos a partir de ontem para garantir que problemas de fuso horário não escondam os de hoje
-  const query = `*[_type == "evento" && dataInicio >= $ontem] | order(dataInicio asc)[0...15] {
-    _id,
-    titulo,
-    tipo,
-    dataInicio,
-    local,
-    freiCelebrante
-  }`;
-  
-  const ontem = new Date();
-  ontem.setDate(ontem.getDate() - 1);
-  
-  return client.fetch(query, { ontem: ontem.toISOString() }, { next: { revalidate: 60 } });
+interface DadosSobre {
+  titulo?: string;
+  imagemUrl?: string;
+  historia?: string;
+  fraternidade?: Frade[];
+  horarioSecretaria?: string;
+  telefone?: string;
+  whatsapp?: string;
+  endereco?: string;
 }
 
-// Lógica de cores (A mesma do calendário)
-const obterCores = (tipo: string) => {
-  const paleta: Record<string, any> = {
-    missa: { bgCard: 'bg-[#8C6E49]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#F2F2F2]/90', badge: 'bg-[#401D10]/20 text-[#F2F2F2]' },
-    formacao: { bgCard: 'bg-[#402208]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#F2F2F2]/80', badge: 'bg-[#F2F2F2]/10 text-[#F2F2F2]' },
-    reuniao: { bgCard: 'bg-[#402208]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#F2F2F2]/80', badge: 'bg-[#F2F2F2]/10 text-[#F2F2F2]' },
-    festa: { bgCard: 'bg-[#593508]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#F2F2F2]/80', badge: 'bg-[#F2F2F2]/10 text-[#F2F2F2]' },
-    evento: { bgCard: 'bg-[#593508]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#F2F2F2]/80', badge: 'bg-[#F2F2F2]/10 text-[#F2F2F2]' },
-    pastorais: { bgCard: 'bg-[#735A51]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#F2F2F2]/80', badge: 'bg-[#F2F2F2]/15 text-[#F2F2F2]' }
-  };
-  const tipoFormatado = tipo ? tipo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : '';
-  return paleta[tipoFormatado] || { bgCard: 'bg-[#592C1C]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#A6948D]', badge: 'bg-[#401D10] text-[#F2F2F2]' };
-};
-
-export default async function Home() {
-  // Busca os dados simultaneamente para ser mais rápido
-  const [noticias, todosEventos] = await Promise.all([
-    getUltimasNoticias(),
-    getProximosEventos()
-  ]);
-
-  // Filtra apenas os eventos que acontecem Hoje ou Amanhã
-  const eventosHojeAmanha = todosEventos.filter((evento: any) => {
-    const dataEvento = new Date(evento.dataInicio);
-    return isToday(dataEvento) || isTomorrow(dataEvento);
-  });
+export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
+  const [menuAberto, setMenuAberto] = useState<boolean>(false);
+  // Estado para controlar o Modal de Biografia
+  const [fradeSelecionado, setFradeSelecionado] = useState<Frade | null>(null);
 
   return (
-    <div className="relative min-h-screen font-sans bg-[#F2F2F2] flex flex-col overflow-x-hidden">
+    <div className="relative min-h-screen pb-20 font-sans bg-[#F2F2F2]">
       
-      {/* =========================================
-          HERO (FOTO METADE DA TELA COM SOMBRA)
-      ========================================= */}
-      <section className="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
-        <img 
-          src="https://images.unsplash.com/photo-1548625361-ec72af0f5eb9?q=80&w=2070&auto=format&fit=crop" 
-          alt="Fachada da Paróquia São José do Patrocínio" 
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/50 to-transparent"></div>
-        <div className="absolute inset-0 bg-black/20"></div>
-
-        <div className="relative z-10 text-center px-4 md:px-6 w-full flex flex-col items-center justify-center pt-10">
-          <span className="text-[#A6948D] font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4 block drop-shadow-md">
-            Bem-vindo à
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight drop-shadow-2xl max-w-4xl">
-            Paróquia São José <br className="hidden md:block" />
-            <span className="text-[#F2F2F2]">do Patrocínio</span>
-          </h1>
+      {/* CONTEÚDO PRINCIPAL (Ajustado mt para pt para remover a barra no topo) */}
+      <div className="max-w-md md:max-w-6xl mx-auto pt-4 md:pt-12 px-6">
+        
+        {/* TOPO MOBILE */}
+        <div className="md:hidden flex justify-between items-start pt-12 mb-8 relative z-30">
+          <h1 className="text-3xl font-bold text-[#401D10] leading-tight tracking-tight">Sobre a<br />Paróquia</h1>
+          <button onClick={() => setMenuAberto(true)} className="w-11 h-11 flex items-center justify-center rounded-full bg-[#401D10] text-[#F2F2F2] shadow-md">
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+          </button>
         </div>
-      </section>
 
-      {/* =========================================
-          SEÇÃO 1: DESCRIÇÃO DA PARÓQUIA E SECRETARIA
-      ========================================= */}
-      <section className="py-16 md:py-24 px-6 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-center">
-          
-          {/* Esquerda: Logo e Descrição */}
-          <div className="lg:col-span-2 flex flex-col sm:flex-row items-center sm:items-start justify-center gap-8 md:gap-12">
-            <div className="w-32 sm:w-40 md:w-48 shrink-0">
-              <img src="/Tau2.png" alt="Logo Paróquia" className="w-full h-auto object-contain mx-auto" />
-            </div>
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#401D10] mb-4 md:mb-6 leading-tight">
-                Uma comunidade de fé, <br className="hidden md:block" />
-                esperança e caridade.
-              </h2>
-              <p className="text-[#735A51] text-base md:text-lg lg:text-xl leading-relaxed font-serif">
-                Somos uma rede viva de comunidades unidas pelo amor de Cristo e inspiradas 
-                pelos exemplos de São José e São Francisco de Assis. Aqui, buscamos acolher 
-                cada irmão, vivenciar a Palavra e celebrar os sacramentos em fraternidade. 
-                Sinta-se em casa, a paróquia é sua!
-              </p>
-            </div>
+        {/* TÍTULO DESKTOP */}
+        <div className="hidden md:block mb-12 text-center">
+          <h1 className="text-5xl font-bold font-serif text-[#401D10] tracking-tight mb-4">{dados?.titulo || 'Sobre a Paróquia'}</h1>
+        </div>
+
+        {/* IMAGEM DA MATRIZ */}
+        {dados?.imagemUrl && (
+          <div className="w-full h-64 md:h-[500px] mb-16 rounded-3xl overflow-hidden shadow-sm border border-[#A6948D]/20">
+            <img src={dados.imagemUrl} alt="Foto da Paróquia" className="w-full h-full object-cover" />
           </div>
+        )}
 
-          {/* Direita: Secretaria (Card Escuro Idêntico à imagem) */}
-          <div className="lg:col-span-1 w-full max-w-md mx-auto lg:mx-0">
-            <div className="bg-[#401D10] text-[#F2F2F2] p-8 md:p-10 rounded-[2rem] shadow-xl border border-[#592C1C]">
-              <div className="flex items-center gap-3 mb-8">
-                <svg className="w-7 h-7 text-[#A6948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <h3 className="font-serif font-bold text-2xl text-white">Secretaria</h3>
-              </div>
-              
-              <div className="space-y-6 text-[#A6948D] text-base md:text-lg">
-                <div>
-                  <span className="block text-sm font-bold uppercase tracking-wider mb-2 text-white">Horário</span>
-                  <span className="whitespace-pre-wrap leading-relaxed block">
-                    Lorem ipsum dolor 10:00 - 11:00{'\n'}
-                    sit amet, consectetur 20:00 - 11:00{'\n'}
-                    adipiscing elit. 13:00 - 11:00
-                  </span>
-                </div>
-                <div>
-                  <span className="block text-sm font-bold uppercase tracking-wider mb-2 text-white">Endereço</span>
-                  <span className="leading-relaxed block">R. Iguaçu, 130, Cel. Freitas - SC,<br/>89840-000</span>
-                </div>
-                <div className="pt-6 border-t border-[#592C1C] space-y-4">
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-white">Fixo:</span> (49) 3347-0236
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-white">WhatsApp:</span> (49) 98814-1513
-                  </div>
-                </div>
-              </div>
+        {/* =========================================
+            SESSÃO: FRATERNIDADE (O GRID DE FOTOS)
+        ========================================= */}
+        {dados?.fraternidade && dados.fraternidade.length > 0 && (
+          <div className="mb-20">
+            <div className="mb-10 text-center md:text-left">
+              <span className="flex items-center justify-center md:justify-start gap-2 text-[#A6948D] font-bold tracking-widest uppercase text-sm mb-2">
+                <span className="w-2 h-2 rounded-full bg-[#592C1C]"></span>
+                Nossos Frades
+              </span>
+              <h2 className="text-4xl font-serif font-bold text-[#401D10]">Conheça a Fraternidade</h2>
+              <p className="text-[#735A51] mt-3 text-lg">Os frades que guiam e animam a vida pastoral da nossa paróquia.</p>
             </div>
-          </div>
-          
-        </div>
-      </section>
 
-      {/* =========================================
-          SEÇÃO 2: CARRETEL DE NOTÍCIAS (DADOS REAIS)
-      ========================================= */}
-      <section className="py-12 w-full max-w-7xl mx-auto overflow-hidden">
-        <div className="flex justify-between items-end mb-8 px-6 md:px-8">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10]">Últimas Notícias</h2>
-          <Link href="/noticias" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
-            Ver todas
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
-          </Link>
-        </div>
+            {/* GRID INSPIRADO NA IMAGEM */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {dados.fraternidade.map((frade, index) => (
+                <div 
+                  key={index} 
+                  onClick={() => setFradeSelecionado(frade)}
+                  className="relative rounded-[2rem] overflow-hidden bg-[#A6948D]/20 group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
+                >
+                  {/* Foto do Frade */}
+                  <div className="h-80 md:h-[400px] w-full">
+                    {frade.fotoUrl ? (
+                      <img src={frade.fotoUrl} alt={frade.nome} className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#735A51] bg-[#F2F2F2]">Sem foto</div>
+                    )}
+                  </div>
 
-        <div className="flex overflow-x-auto gap-4 md:gap-6 pb-8 pt-2 px-6 md:px-8 snap-x snap-mandatory scrollbar-hide w-full">
-          {noticias.length > 0 ? (
-            noticias.map((noticia: any) => (
-              <Link key={noticia._id} href={`/noticias/${noticia.slug}`} className="snap-start shrink-0 w-[85vw] sm:w-[280px] md:w-[320px] bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#A6948D]/20 group flex flex-col">
-                <div className="h-40 md:h-48 bg-[#A6948D]/20 overflow-hidden relative">
-                  <div className="absolute inset-0 bg-[#A6948D]/10 group-hover:bg-transparent transition-colors z-10"></div>
-                  {noticia.imagemUrl ? (
-                    <img src={noticia.imagemUrl} alt={noticia.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#A6948D]">
-                      <svg className="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  {/* Card Branco Flutuante (estilo da imagem) */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm p-5 rounded-2xl flex justify-between items-center transform transition-transform duration-300 group-hover:-translate-y-1 shadow-lg">
+                    <div>
+                      <h3 className="font-serif font-bold text-xl text-[#401D10]">{frade.nome}</h3>
+                      <p className="text-sm font-medium text-[#A6948D] uppercase tracking-wider mt-1">{frade.funcao}</p>
                     </div>
+                    {/* Botão circular de "Ler Mais" estilo LinkedIn */}
+                    <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center text-[#592C1C] group-hover:bg-[#592C1C] group-hover:text-white transition-colors flex-shrink-0">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ESTRUTURA EM GRID (História e Contato) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Coluna Principal: História */}
+          <div className="lg:col-span-2">
+            <h2 className="text-3xl font-serif font-bold text-[#401D10] mb-6">Nossa História</h2>
+            <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#A6948D]/20">
+              <div className="text-[#735A51] text-lg leading-relaxed font-serif whitespace-pre-wrap">
+                {dados?.historia ? dados.historia : 'História ainda não cadastrada.'}
+              </div>
+            </div>
+          </div>
+
+          {/* Coluna Lateral: Secretaria */}
+          <div className="lg:col-span-1">
+            <div className="bg-[#401D10] text-[#F2F2F2] p-8 rounded-3xl shadow-lg border border-[#592C1C] sticky top-8">
+              <div className="flex items-center gap-3 mb-6">
+                <svg className="w-6 h-6 text-[#A6948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                <h3 className="font-serif font-bold text-xl text-white">Secretaria</h3>
+              </div>
+              <div className="space-y-6 text-[#A6948D]">
+                {dados?.horarioSecretaria && (
+                  <div>
+                    <span className="block text-sm font-bold uppercase tracking-wider mb-1 text-white">Horário</span>
+                    <span className="whitespace-pre-wrap">{dados.horarioSecretaria}</span>
+                  </div>
+                )}
+                {dados?.endereco && (
+                  <div>
+                    <span className="block text-sm font-bold uppercase tracking-wider mb-1 text-white">Endereço</span>
+                    <span>{dados.endereco}</span>
+                  </div>
+                )}
+                <div className="pt-4 border-t border-[#592C1C] space-y-3">
+                  {dados?.telefone && (
+                    <div className="flex items-center gap-3"><span className="font-bold text-white">Fixo:</span> {dados.telefone}</div>
+                  )}
+                  {dados?.whatsapp && (
+                    <div className="flex items-center gap-3"><span className="font-bold text-white">WhatsApp:</span> {dados.whatsapp}</div>
                   )}
                 </div>
-                <div className="p-6 md:p-8 flex flex-col flex-1">
-                  <time className="text-[11px] md:text-xs font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
-                    {format(new Date(noticia.dataPublicacao), "dd 'de' MMM, yyyy", { locale: ptBR })}
-                  </time>
-                  <h3 className="text-lg md:text-xl font-serif font-bold text-[#401D10] mb-3 group-hover:text-[#592C1C] transition-colors leading-tight line-clamp-2">
-                    {noticia.titulo}
-                  </h3>
-                  <p className="text-[#735A51] text-sm line-clamp-2 mb-4 flex-1">
-                    {noticia.resumo}
-                  </p>
-                  <span className="text-[#592C1C] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
-                    Ler matéria <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                  </span>
-                </div>
-              </Link>
-            ))
-          ) : (
-             <p className="text-[#735A51] italic px-2">Nenhuma notícia recente publicada.</p>
-          )}
-        </div>
-      </section>
-
-      {/* =========================================
-          SEÇÃO 3: CARRETEL DE EVENTOS (DADOS REAIS)
-      ========================================= */}
-      <section className="py-12 w-full max-w-7xl mx-auto overflow-hidden">
-        <div className="bg-[#A6948D]/5 rounded-none md:rounded-[3rem] border-y md:border border-[#A6948D]/20 py-12 mb-12">
-          <div className="flex justify-between items-end mb-8 px-6 md:px-10">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10] mb-2">Próximos Eventos</h2>
-              <p className="text-[#735A51] font-medium text-sm md:text-base">A programação de hoje e amanhã</p>
-            </div>
-            <Link href="/calendario" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
-              Ver calendário
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
-            </Link>
-          </div>
-
-          <div className="flex overflow-x-auto gap-4 md:gap-6 pb-6 pt-2 px-6 md:px-10 snap-x snap-mandatory scrollbar-hide w-full">
-            {eventosHojeAmanha.length > 0 ? (
-              eventosHojeAmanha.map((evento: any) => {
-                const cores = obterCores(evento.tipo);
-                const isMissa = evento.tipo?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 'missa';
-                const dataEvt = new Date(evento.dataInicio);
-                const rotuloDia = isToday(dataEvt) ? 'Hoje' : 'Amanhã';
-
-                return (
-                  <div key={evento._id} className={`snap-start shrink-0 w-[80vw] sm:w-[260px] md:w-[300px] ${cores.bgCard} ${cores.textCard} p-6 rounded-3xl shadow-md transition-transform hover:-translate-y-1 duration-300`}>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
-                      {evento.tipo}
-                    </span>
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-lg md:text-xl font-serif font-medium pr-2 md:pr-4 leading-tight">{evento.titulo}</h4>
-                      <span className={`${cores.textHora} font-light text-xl md:text-2xl tracking-tight`}>
-                        {format(dataEvt, 'HH:mm')}
-                      </span>
-                    </div>
-                    <div className="space-y-1 text-xs md:text-sm mt-4 opacity-90">
-                      <p className="flex items-center gap-2">📅 {rotuloDia}</p>
-                      <p className="flex items-center gap-2">📍 {evento.local}</p>
-                      {isMissa && evento.freiCelebrante && (
-                        <p className="flex items-center gap-2 mt-1">✝ {evento.freiCelebrante}</p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="w-full text-center py-8">
-                <p className="text-[#735A51] font-medium bg-white/50 inline-block px-6 py-3 rounded-2xl border border-dashed border-[#A6948D]">
-                  Nenhum evento programado para hoje ou amanhã.
-                </p>
               </div>
-            )}
-          </div>
-          
-          <div className="mt-4 px-6 text-center sm:hidden">
-            <Link href="/calendario" className="inline-block px-6 py-3 bg-[#A6948D]/20 text-[#592C1C] font-bold rounded-xl active:scale-95 transition-transform text-sm w-full">
-              Ver calendário completo
-            </Link>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* =========================================
-          SEÇÃO 4: LITURGIA E VELAS
+          MODAL (JANELA FLUTUANTE DA HISTÓRIA DO FRADE)
       ========================================= */}
-      <section className="py-6 md:py-12 px-6 max-w-5xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          
-          <div className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-[#A6948D]/20 flex flex-col items-center text-center group hover:shadow-xl transition-all duration-300">
-            <div className="w-16 h-16 md:w-20 md:h-20 bg-[#401D10]/10 rounded-full flex items-center justify-center text-[#592C1C] mb-6 group-hover:scale-110 transition-transform">
-              <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+      {fradeSelecionado && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#401D10]/60 backdrop-blur-sm" onClick={() => setFradeSelecionado(null)}>
+          <div 
+            className="bg-[#F2F2F2] rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()} 
+          >
+            {/* Botão de Fechar */}
+            <button 
+              onClick={() => setFradeSelecionado(null)}
+              className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-[#735A51] hover:bg-[#A6948D]/20 transition-colors z-20 shadow-sm"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            {/* Conteúdo do Modal Dividido (Foto e Texto) */}
+            <div className="p-6 md:p-12 flex flex-col md:flex-row gap-8 md:gap-12 items-start mt-4 md:mt-0">
+              
+              {/* Coluna da Foto Inteligente (Se ajusta sem cortar) */}
+              {fradeSelecionado.fotoUrl && (
+                <div className="w-full md:w-2/5 flex-shrink-0">
+                  <div className="bg-white p-2 md:p-3 rounded-3xl shadow-md border border-[#A6948D]/20">
+                    <img 
+                      src={fradeSelecionado.fotoUrl} 
+                      alt={fradeSelecionado.nome} 
+                      className="w-full h-auto max-h-[400px] md:max-h-[500px] object-contain rounded-2xl mx-auto" 
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Coluna do Texto */}
+              <div className="flex-1 w-full md:pt-4">
+                <span className="inline-block bg-[#592C1C] text-white font-bold text-xs uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-sm">
+                  {fradeSelecionado.funcao}
+                </span>
+                <h2 className="text-3xl md:text-5xl font-serif font-bold text-[#401D10] mb-6 leading-tight">
+                  {fradeSelecionado.nome}
+                </h2>
+                
+                <div className="text-[#735A51] text-lg leading-relaxed whitespace-pre-wrap font-serif">
+                  {fradeSelecionado.historia ? fradeSelecionado.historia : 'A biografia deste frade ainda não foi adicionada no sistema.'}
+                </div>
+              </div>
+
             </div>
-            <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10] mb-3 md:mb-4">Liturgia Diária</h3>
-            <p className="text-[#735A51] mb-8 leading-relaxed text-sm md:text-base">
-              Acompanhe as leituras, o salmo e o evangelho do dia para nutrir sua espiritualidade com a Palavra de Deus.
-            </p>
-            <Link href="/liturgia" className="mt-auto px-8 py-3.5 bg-[#401D10] text-white font-bold rounded-2xl hover:bg-[#592C1C] transition-colors w-full sm:w-auto text-sm md:text-base">
-              Ler a Liturgia de Hoje
-            </Link>
           </div>
-
-          <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-8 md:p-10 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center group hover:shadow-xl transition-all duration-300">
-            <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-6 group-hover:scale-110 transition-transform">
-              <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>
-            </div>
-            <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-3 md:mb-4">Vela Virtual</h3>
-            <p className="text-white/80 mb-8 leading-relaxed text-sm md:text-base">
-              Acenda uma vela e deixe sua intenção em nosso site. Sua prece ficará acesa espiritualmente por 9 dias em nossa novena.
-            </p>
-            <Link href="/velas" className="mt-auto px-8 py-3.5 bg-white text-[#401D10] font-bold rounded-2xl hover:bg-[#F2F2F2] transition-colors w-full sm:w-auto text-sm md:text-base">
-              Acender uma Vela
-            </Link>
-          </div>
-
         </div>
-      </section>
-
-      {/* =========================================
-          SEÇÃO 5: CONHEÇA A PARÓQUIA
-      ========================================= */}
-      <section className="py-12 md:py-24 px-6 max-w-6xl mx-auto w-full">
-        <h2 className="text-2xl md:text-4xl font-serif font-bold text-[#401D10] text-center mb-8 md:mb-12">Nossa Estrutura</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-          
-          <Link href="/sobre" className="relative h-64 md:h-80 rounded-[2rem] overflow-hidden group">
-            <img src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?q=80&w=800&auto=format&fit=crop" alt="Igreja por dentro" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 p-6 md:p-8">
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Conheça nossa História</h3>
-              <p className="text-white/80 font-medium flex items-center gap-2 text-sm md:text-base">
-                Nossos frades, padroeiro e caminhada
-                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-              </p>
-            </div>
-          </Link>
-
-          <Link href="/comunidades" className="relative h-64 md:h-80 rounded-[2rem] overflow-hidden group">
-            <img src="https://images.unsplash.com/photo-1544026362-73138f32bcba?q=80&w=800&auto=format&fit=crop" alt="Pessoas na igreja" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 p-6 md:p-8">
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Nossas Comunidades</h3>
-              <p className="text-white/80 font-medium flex items-center gap-2 text-sm md:text-base">
-                Encontre a igreja mais próxima de você
-                <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-              </p>
-            </div>
-          </Link>
-
-        </div>
-      </section>
-
+      )}
     </div>
   );
 }
