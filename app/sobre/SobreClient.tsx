@@ -3,8 +3,7 @@ import Link from 'next/link';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
 // ATENÇÃO: Verifique se o caminho de importação do seu client do Sanity está correto
-import { client } from '../lib/sanity'; 
-import { urlFor } from '..//lib/image';
+import { client } from '../../lib/sanity'; 
 
 // =========================================
 // FUNÇÕES DE BUSCA NO SANITY
@@ -15,11 +14,12 @@ async function getUltimasNoticias() {
     titulo,
     resumo,
     dataPublicacao,
-    imagemDestaque, // Pegamos o objeto inteiro da imagem
+    "imagemUrl": imagemPrincipal.asset->url,
     "slug": slug.current
   }`;
-  return client.fetch(query, {}, { next: { revalidate: 60 } });
+  return client.fetch(query, {}, { next: { revalidate: 60 } }); // Atualiza a cada 60s
 }
+
 async function getProximosEventos() {
   // Pega eventos a partir de ontem para garantir que problemas de fuso horário não escondam os de hoje
   const query = `*[_type == "evento" && dataInicio >= $ontem] | order(dataInicio asc)[0...15] {
@@ -71,7 +71,6 @@ export default async function Home() {
           HERO (FOTO METADE DA TELA COM SOMBRA)
       ========================================= */}
       <section className="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
-        {/* Substitua o src pela foto da sua matriz */}
         <img 
           src="https://images.unsplash.com/photo-1548625361-ec72af0f5eb9?q=80&w=2070&auto=format&fit=crop" 
           alt="Fachada da Paróquia São José do Patrocínio" 
@@ -92,25 +91,65 @@ export default async function Home() {
       </section>
 
       {/* =========================================
-          SEÇÃO 1: LOGO E DESCRIÇÃO DA PARÓQUIA
+          SEÇÃO 1: DESCRIÇÃO DA PARÓQUIA E SECRETARIA
       ========================================= */}
-      <section className="py-16 md:py-24 px-6 max-w-6xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
-          <div className="w-32 sm:w-40 md:w-64 shrink-0">
-            <img src="/Tau2.png" alt="Logo Paróquia" className="w-full h-auto object-contain mx-auto" />
+      <section className="py-16 md:py-24 px-6 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-center">
+          
+          {/* Esquerda: Logo e Descrição */}
+          <div className="lg:col-span-2 flex flex-col sm:flex-row items-center sm:items-start justify-center gap-8 md:gap-12">
+            <div className="w-32 sm:w-40 md:w-48 shrink-0">
+              <img src="/Tau2.png" alt="Logo Paróquia" className="w-full h-auto object-contain mx-auto" />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#401D10] mb-4 md:mb-6 leading-tight">
+                Uma comunidade de fé, <br className="hidden md:block" />
+                esperança e caridade.
+              </h2>
+              <p className="text-[#735A51] text-base md:text-lg lg:text-xl leading-relaxed font-serif">
+                Somos uma rede viva de comunidades unidas pelo amor de Cristo e inspiradas 
+                pelos exemplos de São José e São Francisco de Assis. Aqui, buscamos acolher 
+                cada irmão, vivenciar a Palavra e celebrar os sacramentos em fraternidade. 
+                Sinta-se em casa, a paróquia é sua!
+              </p>
+            </div>
           </div>
-          <div className="flex-1 text-center md:text-left">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#401D10] mb-4 md:mb-6 leading-tight">
-              Uma comunidade de fé, <br className="hidden md:block" />
-              esperança e caridade.
-            </h2>
-            <p className="text-[#735A51] text-base md:text-lg lg:text-xl leading-relaxed font-serif">
-              Somos uma rede viva de comunidades unidas pelo amor de Cristo e inspiradas 
-              pelos exemplos de São José e São Francisco de Assis. Aqui, buscamos acolher 
-              cada irmão, vivenciar a Palavra e celebrar os sacramentos em fraternidade. 
-              Sinta-se em casa, a paróquia é sua!
-            </p>
+
+          {/* Direita: Secretaria (Card Escuro Idêntico à imagem) */}
+          <div className="lg:col-span-1 w-full max-w-md mx-auto lg:mx-0">
+            <div className="bg-[#401D10] text-[#F2F2F2] p-8 md:p-10 rounded-[2rem] shadow-xl border border-[#592C1C]">
+              <div className="flex items-center gap-3 mb-8">
+                <svg className="w-7 h-7 text-[#A6948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <h3 className="font-serif font-bold text-2xl text-white">Secretaria</h3>
+              </div>
+              
+              <div className="space-y-6 text-[#A6948D] text-base md:text-lg">
+                <div>
+                  <span className="block text-sm font-bold uppercase tracking-wider mb-2 text-white">Horário</span>
+                  <span className="whitespace-pre-wrap leading-relaxed block">
+                    Lorem ipsum dolor 10:00 - 11:00{'\n'}
+                    sit amet, consectetur 20:00 - 11:00{'\n'}
+                    adipiscing elit. 13:00 - 11:00
+                  </span>
+                </div>
+                <div>
+                  <span className="block text-sm font-bold uppercase tracking-wider mb-2 text-white">Endereço</span>
+                  <span className="leading-relaxed block">R. Iguaçu, 130, Cel. Freitas - SC,<br/>89840-000</span>
+                </div>
+                <div className="pt-6 border-t border-[#592C1C] space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-white">Fixo:</span> (49) 3347-0236
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-white">WhatsApp:</span> (49) 98814-1513
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+          
         </div>
       </section>
 
@@ -118,64 +157,49 @@ export default async function Home() {
           SEÇÃO 2: CARRETEL DE NOTÍCIAS (DADOS REAIS)
       ========================================= */}
       <section className="py-12 w-full max-w-7xl mx-auto overflow-hidden">
-  <div className="flex justify-between items-end mb-8 px-6 md:px-8">
-    <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10]">Últimas Notícias</h2>
-    <Link href="/noticias" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
-      Ver todas
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
-    </Link>
-  </div>
+        <div className="flex justify-between items-end mb-8 px-6 md:px-8">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10]">Últimas Notícias</h2>
+          <Link href="/noticias" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
+            Ver todas
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+          </Link>
+        </div>
 
-  <div className="flex overflow-x-auto gap-4 md:gap-6 pb-8 pt-2 px-6 md:px-8 snap-x snap-mandatory scrollbar-hide w-full">
-    {noticias.length > 0 ? (
-      // AQUI ESTAVA O ERRO: Removi as chaves extras que envolviam o .map
-      noticias.map((noticia: any) => (
-        <Link 
-          key={noticia._id} 
-          href={`/noticias/${noticia.slug}`} 
-          className="snap-start shrink-0 w-[85vw] sm:w-[280px] md:w-[320px] bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#A6948D]/20 group flex flex-col"
-        >
-          {/* Bloco da Imagem */}
-          <div className="h-40 md:h-48 bg-[#A6948D]/20 overflow-hidden relative">
-            <div className="absolute inset-0 bg-[#A6948D]/10 group-hover:bg-transparent transition-colors z-10"></div>
-            
-            {noticia.imagemDestaque ? (
-              <img 
-                src={urlFor(noticia.imagemDestaque).width(600).url()} 
-                alt={noticia.titulo} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-[#A6948D]">
-                <svg className="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            )}
-          </div>
-
-          {/* Bloco do Texto */}
-          <div className="p-6 md:p-8 flex flex-col flex-1">
-            <time className="text-[11px] md:text-xs font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
-              {format(new Date(noticia.dataPublicacao), "dd 'de' MMM, yyyy", { locale: ptBR })}
-            </time>
-            <h3 className="text-lg md:text-xl font-serif font-bold text-[#401D10] mb-3 group-hover:text-[#592C1C] transition-colors leading-tight line-clamp-2">
-              {noticia.titulo}
-            </h3>
-            <p className="text-[#735A51] text-sm line-clamp-2 mb-4 flex-1">
-              {noticia.resumo}
-            </p>
-            <span className="text-[#592C1C] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
-              Ler matéria <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-            </span>
-          </div>
-        </Link>
-      ))
-    ) : (
-      <p className="text-[#735A51] italic px-2">Nenhuma notícia recente publicada.</p>
-    )}
-  </div>
-</section>
+        <div className="flex overflow-x-auto gap-4 md:gap-6 pb-8 pt-2 px-6 md:px-8 snap-x snap-mandatory scrollbar-hide w-full">
+          {noticias.length > 0 ? (
+            noticias.map((noticia: any) => (
+              <Link key={noticia._id} href={`/noticias/${noticia.slug}`} className="snap-start shrink-0 w-[85vw] sm:w-[280px] md:w-[320px] bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#A6948D]/20 group flex flex-col">
+                <div className="h-40 md:h-48 bg-[#A6948D]/20 overflow-hidden relative">
+                  <div className="absolute inset-0 bg-[#A6948D]/10 group-hover:bg-transparent transition-colors z-10"></div>
+                  {noticia.imagemUrl ? (
+                    <img src={noticia.imagemUrl} alt={noticia.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[#A6948D]">
+                      <svg className="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </div>
+                  )}
+                </div>
+                <div className="p-6 md:p-8 flex flex-col flex-1">
+                  <time className="text-[11px] md:text-xs font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
+                    {format(new Date(noticia.dataPublicacao), "dd 'de' MMM, yyyy", { locale: ptBR })}
+                  </time>
+                  <h3 className="text-lg md:text-xl font-serif font-bold text-[#401D10] mb-3 group-hover:text-[#592C1C] transition-colors leading-tight line-clamp-2">
+                    {noticia.titulo}
+                  </h3>
+                  <p className="text-[#735A51] text-sm line-clamp-2 mb-4 flex-1">
+                    {noticia.resumo}
+                  </p>
+                  <span className="text-[#592C1C] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
+                    Ler matéria <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                  </span>
+                </div>
+              </Link>
+            ))
+          ) : (
+             <p className="text-[#735A51] italic px-2">Nenhuma notícia recente publicada.</p>
+          )}
+        </div>
+      </section>
 
       {/* =========================================
           SEÇÃO 3: CARRETEL DE EVENTOS (DADOS REAIS)
