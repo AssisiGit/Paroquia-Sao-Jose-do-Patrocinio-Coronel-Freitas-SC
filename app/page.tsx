@@ -96,14 +96,19 @@ export default async function Home() {
       ========================================= */}
       <section className="py-16 md:py-24 px-6 max-w-6xl mx-auto w-full">
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
-          <div className="w-32 sm:w-40 md:w-64 shrink-0">
-            <img src="/Tau2.png" alt="Logo Paróquia" className="w-full h-auto object-contain mx-auto" />
-          </div>
-          <div className="flex-1 text-center md:text-left">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#401D10] mb-4 md:mb-6 leading-tight">
-              Uma comunidade de fé, <br className="hidden md:block" />
-              esperança e caridade.
-            </h2>
+          <div className="w-48 sm:w-56 md:w-80 shrink-0">
+              <img 
+                src="/Tau4.svg" 
+                alt="Logo Paróquia" 
+                className="w-full h-auto object-contain mx-auto scale-125 md:scale-150 transform transition-transform" 
+              />
+            </div>
+            
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#401D10] mb-4 md:mb-6 leading-tight">
+                Uma comunidade de fé, <br className="hidden md:block" />
+                esperança e caridade.
+              </h2>
             <p className="text-[#735A51] text-base md:text-lg lg:text-xl leading-relaxed font-serif">
               Somos uma rede viva de comunidades unidas pelo amor de Cristo e inspiradas 
               pelos exemplos de São José e São Francisco de Assis. Aqui, buscamos acolher 

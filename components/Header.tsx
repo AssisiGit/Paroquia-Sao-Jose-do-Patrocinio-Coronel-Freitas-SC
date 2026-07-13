@@ -93,17 +93,25 @@ export default function Header() {
           </div>
         </header>
 
-        {/* =========================================
+{/* =========================================
             HEADER MOBILE
         ========================================= */}
-        {/* O padding superior diminui quando rola a tela para ganhar espaço */}
-        <div className={`md:hidden flex justify-between items-center px-6 pb-3 transition-all duration-300 ${noTopo ? 'pt-8' : 'pt-4'}`}>
-          <a href="/">
-            <img src="/Tau2.png" alt="Logo Paróquia" className="h-9 w-auto object-contain" />
+        {/* Trocamos pt-8 e pb-3 por py-6 (igual em cima e embaixo) para centralizar perfeitamente */}
+        <div className={`md:hidden flex justify-between items-center px-6 transition-all duration-300 ${noTopo ? 'py-6' : 'py-3'}`}>
+          
+          {/* Adicionei 'flex items-center' na tag <a> para garantir que a imagem não saia do eixo */}
+          <a href="/" className="flex items-center">
+            <img 
+              src="/Tau2.png" 
+              alt="Logo Paróquia" 
+              className="h-10 w-auto object-contain transform scale-100 origin-left" 
+            />
           </a>
+          
           <button onClick={() => setMenuAberto(true)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#401D10] text-[#F2F2F2] shadow-md active:scale-95 transition-all">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
           </button>
+          
         </div>
       </div>
 
@@ -153,11 +161,25 @@ export default function Header() {
               </nav>
             </div>
 
-            <div className="mt-8">
-              <div className="flex items-center gap-4 mb-6">
-                <img src="/Tau2.png" alt="Logo da Paróquia" className="h-12 w-auto object-contain" />
-                <span className="font-serif font-bold text-[#401D10] leading-tight text-lg">Paróquia<br />São José do Patrocínio</span>
+<div className="mt-8">
+              
+              {/* Mudamos para items-center para centralizar a imagem e o bloco de texto no menu */}
+              <div className="flex flex-col items-center mb-6">
+                
+                {/* Trocamos origin-left por origin-center para o zoom manter a logo no meio */}
+                <img 
+                  src="/Tau4.svg" 
+                  alt="Logo da Paróquia" 
+                  className="w-28 h-28 object-contain transform scale-[1.5] origin-center mb-2" 
+                />
+                
+                {/* Adicionamos text-center para alinhar as duas linhas de texto */}
+                <span className="font-serif font-bold text-[#401D10] leading-tight text-lg text-center relative z-10">
+                  Paróquia<br />São José do Patrocínio
+                </span>
+                
               </div>
+
               <div className="pt-6 border-t border-[#A6948D]/30">
                 <a href="/login" className="text-sm font-sans text-[#A6948D] hover:text-[#735A51] transition-colors flex items-center gap-2">
                   🔒 Acesso Secretaria
@@ -167,6 +189,6 @@ export default function Header() {
           </div>
         </div>
       )}
-    </>
+    </> 
   );
 }
