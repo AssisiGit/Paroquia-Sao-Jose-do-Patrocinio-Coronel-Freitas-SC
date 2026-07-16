@@ -1,4 +1,3 @@
-// app/sobre/SobreClient.tsx
 'use client';
 
 import { useState } from 'react';
@@ -101,50 +100,18 @@ export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
           </div>
         )}
 
-        {/* ESTRUTURA EM GRID (História e Contato) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Coluna Principal: História */}
-          <div className="lg:col-span-2">
-            <h2 className="text-3xl font-serif font-bold text-[#401D10] mb-6">Nossa História</h2>
-            <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#A6948D]/20">
-              <div className="text-[#735A51] text-lg leading-relaxed font-serif whitespace-pre-wrap">
-                {dados?.historia ? dados.historia : 'História ainda não cadastrada.'}
-              </div>
-            </div>
-          </div>
-
-          {/* Coluna Lateral: Secretaria */}
-          <div className="lg:col-span-1">
-            <div className="bg-[#401D10] text-[#F2F2F2] p-8 rounded-3xl shadow-lg border border-[#592C1C] sticky top-8">
-              <div className="flex items-center gap-3 mb-6">
-                <svg className="w-6 h-6 text-[#A6948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                <h3 className="font-serif font-bold text-xl text-white">Secretaria</h3>
-              </div>
-              <div className="space-y-6 text-[#A6948D]">
-                {dados?.horarioSecretaria && (
-                  <div>
-                    <span className="block text-sm font-bold uppercase tracking-wider mb-1 text-white">Horário</span>
-                    <span className="whitespace-pre-wrap">{dados.horarioSecretaria}</span>
-                  </div>
-                )}
-                {dados?.endereco && (
-                  <div>
-                    <span className="block text-sm font-bold uppercase tracking-wider mb-1 text-white">Endereço</span>
-                    <span>{dados.endereco}</span>
-                  </div>
-                )}
-                <div className="pt-4 border-t border-[#592C1C] space-y-3">
-                  {dados?.telefone && (
-                    <div className="flex items-center gap-3"><span className="font-bold text-white">Fixo:</span> {dados.telefone}</div>
-                  )}
-                  {dados?.whatsapp && (
-                    <div className="flex items-center gap-3"><span className="font-bold text-white">WhatsApp:</span> {dados.whatsapp}</div>
-                  )}
-                </div>
-              </div>
+        {/* =========================================
+            SESSÃO: HISTÓRIA DA PARÓQUIA (Centralizada)
+        ========================================= */}
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-serif font-bold text-[#401D10] mb-8 text-center">Nossa História</h2>
+          <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-[#A6948D]/20">
+            <div className="text-[#735A51] text-lg leading-relaxed font-serif whitespace-pre-wrap">
+              {dados?.historia ? dados.historia : 'História ainda não cadastrada.'}
             </div>
           </div>
         </div>
+
       </div>
 
       {/* =========================================

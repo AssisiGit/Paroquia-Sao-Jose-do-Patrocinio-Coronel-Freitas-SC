@@ -36,7 +36,7 @@ export default function Footer() {
             <div className="flex items-center gap-4 flex-wrap">
               {/* Botão WhatsApp */}
               <a 
-                href="https://wa.me/5599999999999" 
+                href="https://wa.me/55988141513" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 bg-white/5 border border-white/10 text-[#F2F2F2] hover:bg-[#25D366] hover:border-[#25D366] px-5 py-2.5 rounded-xl font-bold transition-all group"
@@ -49,7 +49,7 @@ export default function Footer() {
               
               {/* Botão Instagram */}
               <a 
-                href="https://instagram.com/suaparoquia" 
+                href="https://instagram.com/psaojosecoronelf" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 bg-white/5 border border-white/10 text-[#F2F2F2] hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF] hover:border-transparent px-5 py-2.5 rounded-xl font-bold transition-all group"
@@ -62,7 +62,7 @@ export default function Footer() {
 
               {/* Novo Botão Facebook */}
               <a 
-                href="https://facebook.com/suaparoquia" 
+                href="https://facebook.com/IgrejaMatrizSaoJoseCF/?locale=pt_BR" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 bg-white/5 border border-white/10 text-[#F2F2F2] hover:bg-[#1877F2] hover:border-[#1877F2] px-5 py-2.5 rounded-xl font-bold transition-all group"
@@ -111,7 +111,7 @@ export default function Footer() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            Acesso Restrito
+            Acesso Secretaria
           </a>
         </div>
         

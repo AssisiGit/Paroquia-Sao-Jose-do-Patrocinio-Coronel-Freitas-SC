@@ -14,7 +14,7 @@ async function getComunidades() {
       padroeiro,
       "imagemUrl": imagemPrincipal.asset->url,
       endereco,
-      horariosMissa
+      horario
     }
   `;
   

@@ -11,7 +11,7 @@ async function getComunidade(slug: string) {
       "imagemUrl": imagemPrincipal.asset->url,
       endereco,
       linkMaps,
-      horariosMissa,
+      horario,
       historia
     }
   `;

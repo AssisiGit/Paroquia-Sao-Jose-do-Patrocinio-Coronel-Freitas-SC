@@ -8,7 +8,7 @@ interface Comunidade {
   imagemUrl?: string;
   endereco?: string;
   linkMaps?: string;
-  horariosMissa?: string;
+  horario?: string;
   historia?: string;
 }
 
@@ -98,7 +98,7 @@ export default function ComunidadeDetalheClient({ comunidade }: { comunidade: Co
               <h3 className="font-serif font-bold text-xl text-[#401D10]">Horários</h3>
             </div>
             <p className="text-[#735A51] whitespace-pre-wrap">
-              {comunidade.horariosMissa || 'Consulte a secretaria para saber os horários.'}
+              {comunidade.horario || 'Consulte a secretaria para saber os horários.'}
             </p>
           </div>
         </div>

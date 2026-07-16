@@ -1,4 +1,3 @@
-// app/calendario/CalendarioClient.tsx
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,7 +5,6 @@ import { format, isToday, isTomorrow, addDays, subMonths, addMonths } from 'date
 import { ptBR } from 'date-fns/locale/pt-BR';
 
 export default function CalendarioClient({ eventosSanity }: { eventosSanity: any[] }) {
-  // Aba 'semana' removida das opções
   const [abaAtiva, setAbaAtiva] = useState<'hoje' | 'amanha' | 'mes' | 'data'>('hoje');
   const [dataSelecionada, setDataSelecionada] = useState<string>('');
   const [mesAtual, setMesAtual] = useState<Date>(new Date());
@@ -58,7 +56,7 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
   }, [eventosSanity, abaAtiva, dataSelecionada, mesAtual]);
 
   const eventosAgrupadosPorDia = useMemo(() => {
-    if (abaAtiva !== 'mes') return null; // Agora agrupa apenas se for a aba Mensal
+    if (abaAtiva !== 'mes') return null;
     const grupos: Record<string, any[]> = {};
     eventosFiltrados.forEach(evento => {
       const dataFormatada = format(new Date(evento.dataInicio), "EEEE, dd 'de' MMMM", { locale: ptBR });
@@ -77,9 +75,6 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
   // =========================================
   // LÓGICAS DO MODAL DE CALENDÁRIO
   // =========================================
-  const hojeReal = new Date();
-  hojeReal.setHours(0, 0, 0, 0);
-
   const dataRefSelecionada = dataSelecionada ? new Date(dataSelecionada + 'T00:00:00') : null;
 
   const abrirCalendario = () => {
@@ -276,79 +271,73 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
       </div>
 
       {/* =========================================
-          MODAL POP-UP DO CALENDÁRIO
+          MODAL POP-UP DO CALENDÁRIO (Design Atualizado)
       ========================================= */}
       {modalCalendarioAberto && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#401D10]/40 backdrop-blur-sm transition-opacity p-4">
-          <div className="absolute inset-0" onClick={() => setModalCalendarioAberto(false)} />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Fundo escuro */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setModalCalendarioAberto(false)}></div>
           
-          <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-200">
+          {/* Caixa do Calendário */}
+          <div className="relative bg-white w-full max-w-[340px] rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             
-            {/* Header do Calendário */}
-            <div className="flex justify-between items-center px-4 py-5 bg-[#F8F9FA] border-b border-[#E5E7EB]">
-              <button onClick={mesAnterior} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 text-gray-600 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            {/* Header: Mês e Setas */}
+            <div className="bg-[#FAFAFA] flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#A6948D]/10">
+              <button onClick={mesAnterior} className="text-[#401D10] hover:text-[#592C1C] transition-colors p-2 -ml-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
               </button>
-              <h3 className="text-[17px] font-bold text-[#401D10] capitalize">
-                {mesVisualizado.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+              <h3 className="font-bold text-[#401D10] text-lg capitalize font-serif tracking-wide">
+                {format(mesVisualizado, "MMMM 'De' yyyy", { locale: ptBR })}
               </h3>
-              <button onClick={proximoMes} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 text-gray-600 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              <button onClick={proximoMes} className="text-[#401D10] hover:text-[#592C1C] transition-colors p-2 -mr-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
 
             {/* Grid de Dias */}
-            <div className="p-5">
+            <div className="p-6">
+              {/* Cabeçalho dos dias da semana */}
               <div className="grid grid-cols-7 mb-4">
-                {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map(dia => (
-                  <div key={dia} className="text-[11px] font-bold text-gray-500 text-center tracking-wide">{dia}</div>
+                {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map((dia, idx) => (
+                  <div key={idx} className="text-center text-[10px] font-bold text-[#735A51] tracking-wider">
+                    {dia}
+                  </div>
                 ))}
               </div>
 
-              <div className="grid grid-cols-7 gap-y-3 gap-x-1">
-                {diasMatriz.map((dia, idx) => {
-                  if (!dia) return <div key={`empty-${idx}`} />;
+              {/* Números */}
+              <div className="grid grid-cols-7 gap-y-4 text-center">
+                {diasMatriz.map((dia, index) => {
+                  if (!dia) return <div key={index}></div>;
                   
-                  const ehSelecionado = dataRefSelecionada && dia.getTime() === dataRefSelecionada.getTime();
-                  const ehHoje = dia.getTime() === hojeReal.getTime();
-                  const ehDomingo = dia.getDay() === 0;
-
-                  let bgClass = "bg-transparent hover:bg-gray-100";
-                  let textClass = "text-[#401D10]";
-
-                  if (ehSelecionado) {
-                    bgClass = "bg-[#E5E5E5]"; 
-                    textClass = "text-[#401D10]";
-                  } else if (ehDomingo && ehHoje) {
-                    bgClass = "bg-[#FFD6D6]"; 
-                    textClass = "text-[#EF4444]";
-                  } else if (ehDomingo) {
-                    textClass = "text-[#EF4444]"; 
-                  }
-
+                  const isDomingo = index % 7 === 0;
+                  
                   return (
-                    <div key={idx} className="flex flex-col items-center justify-center">
-                      <button
+                    <div key={index} className="flex justify-center">
+                      <button 
                         onClick={() => selecionarDataNoModal(dia)}
-                        className={`flex flex-col items-center justify-center w-[40px] h-[44px] rounded-xl transition-colors ${bgClass}`}
+                        className={`w-8 h-8 flex items-center justify-center font-bold rounded-full hover:bg-[#F2F2F2] transition-colors
+                          ${isDomingo ? 'text-[#E53E3E]' : 'text-[#401D10]'}
+                        `}
                       >
-                        <span className={`text-[15px] font-bold mt-1 ${textClass}`}>
-                          {dia.getDate()}
-                        </span>
-                        <div className="w-1.5 h-1.5 rounded-full mt-0.5 opacity-0"></div>
+                        {dia.getDate()}
                       </button>
                     </div>
                   );
                 })}
               </div>
             </div>
-            
-            {/* Rodapé Cancelar */}
-            <div className="px-4 py-3 border-t border-[#E5E7EB] flex justify-end bg-[#F8F9FA]">
-               <button onClick={() => setModalCalendarioAberto(false)} className="text-sm font-bold text-[#A6948D] hover:text-[#735A51] px-4 py-2 rounded-lg transition-colors">
-                 Cancelar
-               </button>
+
+            {/* Footer: Cancelar */}
+            <div className="bg-[#FAFAFA] border-t border-[#A6948D]/10 px-6 py-4 flex justify-end">
+              <button 
+                onClick={() => setModalCalendarioAberto(false)}
+                className="font-bold text-[#A6948D] hover:text-[#401D10] transition-colors text-sm"
+              >
+                Cancelar
+              </button>
             </div>
+
           </div>
         </div>
       )}

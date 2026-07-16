@@ -73,12 +73,12 @@ export default async function Home() {
       <section className="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
         {/* Substitua o src pela foto da sua matriz */}
         <img 
-          src="https://images.unsplash.com/photo-1548625361-ec72af0f5eb9?q=80&w=2070&auto=format&fit=crop" 
+          src="/index1.png" 
           alt="Fachada da Paróquia São José do Patrocínio" 
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/50 to-transparent"></div>
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-black/10"></div>
 
         <div className="relative z-10 text-center px-4 md:px-6 w-full flex flex-col items-center justify-center pt-10">
           <span className="text-[#A6948D] font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4 block drop-shadow-md">
@@ -244,7 +244,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* =========================================
+       {/* =========================================
           SEÇÃO 4: LITURGIA E VELAS
       ========================================= */}
       <section className="py-6 md:py-12 px-6 max-w-5xl mx-auto w-full">
@@ -279,16 +279,19 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* =========================================
-          SEÇÃO 5: CONHEÇA A PARÓQUIA
+{/* =========================================
+          SEÇÃO 5: CONHEÇA A PARÓQUIA E SECRETARIA
       ========================================= */}
-      <section className="py-12 md:py-24 px-6 max-w-6xl mx-auto w-full">
+      {/* Aumentei a largura máxima (max-w-7xl) para caberem 3 colunas com folga */}
+      <section className="py-12 md:py-24 px-6 max-w-7xl mx-auto w-full">
         <h2 className="text-2xl md:text-4xl font-serif font-bold text-[#401D10] text-center mb-8 md:mb-12">Nossa Estrutura</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+        {/* Transformado em 3 colunas (lg:grid-cols-3) para colocar a Secretaria no meio */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
           
-          <Link href="/sobre" className="relative h-64 md:h-80 rounded-[2rem] overflow-hidden group">
-            <img src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?q=80&w=800&auto=format&fit=crop" alt="Igreja por dentro" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          {/* CAIXA 1: HISTÓRIA (Fica na Esquerda) */}
+          <Link href="/sobre" className="relative h-full min-h-[320px] rounded-[2.5rem] overflow-hidden group shadow-sm">
+            <img src="/index2.png" alt="Igreja por dentro" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Conheça nossa História</h3>
@@ -298,9 +301,58 @@ export default async function Home() {
               </p>
             </div>
           </Link>
+{/* CAIXA 2: SECRETARIA (Fica no Meio - Mantendo layout dividido) */}
+          {/* Removi o 'xl:items-start' para que o padrão 'items-center' atue centralizando os dois lados na vertical */}
+          <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-6 xl:p-8 rounded-[2.5rem] shadow-sm flex flex-col xl:flex-row items-center gap-6 xl:gap-8 group hover:shadow-xl transition-all duration-300 h-full">
+            
+            {/* Título e Ícone (Adicionado 'justify-center' e 'h-full' para garantir que fiquem bem no meio) */}
+            <div className="flex flex-col items-center justify-center text-center shrink-0 h-full">
+              <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-4 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+              </div>
+              <h3 className="text-xl font-serif font-bold text-white mb-4">Secretaria</h3>
+              
+              <a href="https://wa.me/5549988141513" target="_blank" rel="noopener noreferrer" className="px-6 py-2.5 bg-white text-[#401D10] font-bold rounded-xl hover:bg-[#F2F2F2] transition-colors text-sm w-full shadow-sm hidden xl:block text-center">
+                Falar Agora
+              </a>
+            </div>
 
-          <Link href="/comunidades" className="relative h-64 md:h-80 rounded-[2rem] overflow-hidden group">
-            <img src="https://images.unsplash.com/photo-1544026362-73138f32bcba?q=80&w=800&auto=format&fit=crop" alt="Pessoas na igreja" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            {/* Informações detalhadas (Horário, Endereço, etc) */}
+            <div className="text-white/80 leading-relaxed text-sm flex flex-col justify-center gap-4 flex-1 w-full text-center xl:text-left h-full">
+              
+              <div className="border-b border-white/10 pb-3">
+                <span className="block font-serif font-bold text-base text-white mb-1">🕗 Horário</span>
+                <span>08h às 11:30 | 13:30 às 17:30</span>
+              </div>
+
+              <div className="border-b border-white/10 pb-3">
+                <span className="block font-serif font-bold text-base text-white mb-1">📍 Endereço</span>
+                <span>R. Iguaçu, 130 - SC</span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                <div className="border-b xl:border-none border-white/10 pb-3 xl:pb-0">
+                  <span className="block font-serif font-bold text-base text-white mb-1">📞 Contatos</span>
+                  <span>(49) 3347-0236 | Whats: (49) 98814-1513</span>
+                </div>
+                <div>
+                  <span className="block font-serif font-bold text-base text-white mb-1">✉️ E-mail</span>
+                  <a href="mailto:contato@paroquia.com.br" className="hover:text-white hover:underline transition-colors break-words">
+                    contato@paroquia.com.br
+                  </a>
+                </div>
+              </div>
+
+              <a href="https://wa.me/5549988141513" target="_blank" rel="noopener noreferrer" className="mt-2 px-6 py-3 bg-white text-[#401D10] font-bold rounded-xl hover:bg-[#F2F2F2] transition-colors text-sm w-full shadow-sm xl:hidden text-center">
+                Chamar no WhatsApp
+              </a>
+
+            </div>
+          </div>
+
+          {/* CAIXA 3: COMUNIDADES (Fica na Direita) */}
+          <Link href="/comunidades" className="relative h-full min-h-[320px] rounded-[2.5rem] overflow-hidden group shadow-sm">
+            <img src="/index3.png" alt="Pessoas na igreja" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Nossas Comunidades</h3>
