@@ -302,11 +302,11 @@ export default async function Home() {
             </div>
           </Link>
 {/* CAIXA 2: SECRETARIA (Fica no Meio - Mantendo layout dividido) */}
-          {/* Removi o 'xl:items-start' para que o padrão 'items-center' atue centralizando os dois lados na vertical */}
-          <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-6 xl:p-8 rounded-[2.5rem] shadow-sm flex flex-col xl:flex-row items-center gap-6 xl:gap-8 group hover:shadow-xl transition-all duration-300 h-full">
+          {/* Adicionamos 'justify-center' aqui no pai para ele centralizar tudo naturalmente */}
+          <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-6 xl:p-8 rounded-[2.5rem] shadow-sm flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-8 group hover:shadow-xl transition-all duration-300 h-full">
             
-            {/* Título e Ícone (Adicionado 'justify-center' e 'h-full' para garantir que fiquem bem no meio) */}
-            <div className="flex flex-col items-center justify-center text-center shrink-0 h-full">
+            {/* Título e Ícone (Removido o h-full que estava 'empurrando' o texto para fora no mobile) */}
+            <div className="flex flex-col items-center justify-center text-center shrink-0">
               <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-4 group-hover:scale-110 transition-transform">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
               </div>
@@ -317,8 +317,8 @@ export default async function Home() {
               </a>
             </div>
 
-            {/* Informações detalhadas (Horário, Endereço, etc) */}
-            <div className="text-white/80 leading-relaxed text-sm flex flex-col justify-center gap-4 flex-1 w-full text-center xl:text-left h-full">
+            {/* Informações detalhadas (Horário, Endereço, etc) - Removido o h-full daqui também */}
+            <div className="text-white/80 leading-relaxed text-sm flex flex-col justify-center gap-4 flex-1 w-full text-center xl:text-left">
               
               <div className="border-b border-white/10 pb-3">
                 <span className="block font-serif font-bold text-base text-white mb-1">🕗 Horário</span>
