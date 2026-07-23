@@ -1,4 +1,3 @@
-// app/comunidades/[slug]/ComunidadeDetalheClient.tsx
 'use client';
 
 interface Comunidade {
@@ -8,20 +7,15 @@ interface Comunidade {
   imagemUrl?: string;
   endereco?: string;
   linkMaps?: string;
-  horario?: string;
+  horario?: string; // O campo de horário garantido aqui na interface
   historia?: string;
 }
 
 export default function ComunidadeDetalheClient({ comunidade }: { comunidade: Comunidade }) {
   
   return (
-    // 'flex flex-col' evita o colapso de margem e o vazamento do fundo preto
     <div className="relative min-h-screen pb-20 font-sans bg-[#F2F2F2] flex flex-col">
       
-      {/* =========================================
-          CONTEÚDO DA COMUNIDADE
-          (Trocado 'mt-4 md:mt-12' por 'pt-8 md:pt-12' e adicionado 'w-full flex-1')
-      ========================================= */}
       <div className="max-w-md md:max-w-4xl mx-auto pt-8 md:pt-12 px-6 w-full flex-1">
         
         {/* TOPO MOBILE (Botão Voltar) */}
@@ -54,12 +48,13 @@ export default function ComunidadeDetalheClient({ comunidade }: { comunidade: Co
           )}
         </div>
 
-        {/* Imagem Fluida */}
+        {/* Imagem Fluida com Otimização (Lazy Loading Nativo) */}
         {comunidade.imagemUrl && (
           <div className="w-full mb-10 rounded-3xl overflow-hidden shadow-sm bg-white/50 border border-[#A6948D]/20 p-2 md:p-3">
             <img 
               src={comunidade.imagemUrl} 
               alt={comunidade.nome} 
+              loading="lazy"
               className="w-full h-auto max-h-[450px] md:max-h-[550px] object-cover rounded-2xl mx-auto" 
             />
           </div>
@@ -89,7 +84,7 @@ export default function ComunidadeDetalheClient({ comunidade }: { comunidade: Co
             )}
           </div>
 
-          {/* Card: Horários */}
+          {/* Card: Horários Atualizado com Validação */}
           <div className="bg-white p-8 rounded-3xl border border-[#A6948D]/20 shadow-sm flex flex-col h-full">
             <div className="flex items-center gap-3 mb-4 text-[#592C1C]">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,9 +92,20 @@ export default function ComunidadeDetalheClient({ comunidade }: { comunidade: Co
               </svg>
               <h3 className="font-serif font-bold text-xl text-[#401D10]">Horários</h3>
             </div>
-            <p className="text-[#735A51] whitespace-pre-wrap">
-              {comunidade.horario || 'Consulte a secretaria para saber os horários.'}
+            
+            {/* Lógica de Validação do Horário */}
+            <p className={`whitespace-pre-wrap ${comunidade.horario ? 'text-[#401D10] font-bold text-lg' : 'text-[#735A51] italic'}`}>
+              {comunidade.horario ? (
+                // Se tiver horário, exibe ele com destaque
+                comunidade.horario
+              ) : (
+                // Se não tiver, exibe a mensagem amigável com link
+                <>
+                  Os horários desta comunidade ainda não foram atualizados no site. Por favor, entre em contato com a <a href="https://wa.me/5549988141513" target="_blank" rel="noopener noreferrer" className="text-[#592C1C] font-bold hover:underline not-italic">Secretaria Paroquial</a> para confirmar a programação.
+                </>
+              )}
             </p>
+
           </div>
         </div>
 
