@@ -36,7 +36,7 @@ export default function Footer() {
             <div className="flex items-center gap-4 flex-wrap">
               {/* Botão WhatsApp */}
               <a 
-                href="https://wa.me/55988141513" 
+                href="https://wa.me/5549988141513?text=Olá%20Gostaria%20de%20falar%20com%20a%20Secretária%20da%20Paróquia." 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 bg-white/5 border border-white/10 text-[#F2F2F2] hover:bg-[#25D366] hover:border-[#25D366] px-5 py-2.5 rounded-xl font-bold transition-all group"

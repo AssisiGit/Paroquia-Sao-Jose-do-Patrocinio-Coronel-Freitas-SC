@@ -1,4 +1,3 @@
-// app/page.tsx
 import Link from 'next/link';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
@@ -71,7 +70,7 @@ export default async function Home() {
           HERO (FOTO METADE DA TELA COM SOMBRA)
       ========================================= */}
       <section className="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
-        {/* Substitua o src pela foto da sua matriz */}
+        {/* NÃO usamos lazy loading aqui pois é a imagem principal que já aparece ao abrir o site (LCP) */}
         <img 
           src="/index1.png" 
           alt="Fachada da Paróquia São José do Patrocínio" 
@@ -100,6 +99,7 @@ export default async function Home() {
               <img 
                 src="/Tau4.svg" 
                 alt="Logo Paróquia" 
+                loading="lazy" 
                 className="w-full h-auto object-contain mx-auto scale-125 md:scale-150 transform transition-transform" 
               />
             </div>
@@ -123,64 +123,65 @@ export default async function Home() {
           SEÇÃO 2: CARRETEL DE NOTÍCIAS (DADOS REAIS)
       ========================================= */}
       <section className="py-12 w-full max-w-7xl mx-auto overflow-hidden">
-  <div className="flex justify-between items-end mb-8 px-6 md:px-8">
-    <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10]">Últimas Notícias</h2>
-    <Link href="/noticias" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
-      Ver todas
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
-    </Link>
-  </div>
+        <div className="flex justify-between items-end mb-8 px-6 md:px-8">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10]">Últimas Notícias</h2>
+          <Link href="/noticias" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
+            Ver todas
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+          </Link>
+        </div>
 
-  <div className="flex overflow-x-auto gap-4 md:gap-6 pb-8 pt-2 px-6 md:px-8 snap-x snap-mandatory scrollbar-hide w-full">
-    {noticias.length > 0 ? (
-      // AQUI ESTAVA O ERRO: Removi as chaves extras que envolviam o .map
-      noticias.map((noticia: any) => (
-        <Link 
-          key={noticia._id} 
-          href={`/noticias/${noticia.slug}`} 
-          className="snap-start shrink-0 w-[85vw] sm:w-[280px] md:w-[320px] bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#A6948D]/20 group flex flex-col"
-        >
-          {/* Bloco da Imagem */}
-          <div className="h-40 md:h-48 bg-[#A6948D]/20 overflow-hidden relative">
-            <div className="absolute inset-0 bg-[#A6948D]/10 group-hover:bg-transparent transition-colors z-10"></div>
-            
-            {noticia.imagemDestaque ? (
-              <img 
-                src={urlFor(noticia.imagemDestaque).width(600).url()} 
-                alt={noticia.titulo} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-[#A6948D]">
-                <svg className="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            )}
-          </div>
+        <div className="flex overflow-x-auto gap-4 md:gap-6 pb-8 pt-2 px-6 md:px-8 snap-x snap-mandatory scrollbar-hide w-full">
+          {noticias.length > 0 ? (
+            noticias.map((noticia: any) => (
+              <Link 
+                key={noticia._id} 
+                href={`/noticias/${noticia.slug}`} 
+                className="snap-start shrink-0 w-[85vw] sm:w-[280px] md:w-[320px] bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#A6948D]/20 group flex flex-col"
+              >
+                {/* Bloco da Imagem */}
+                <div className="h-40 md:h-48 bg-[#A6948D]/20 overflow-hidden relative">
+                  <div className="absolute inset-0 bg-[#A6948D]/10 group-hover:bg-transparent transition-colors z-10"></div>
+                  
+                  {noticia.imagemDestaque ? (
+                    <img 
+                      // Adicionado .format('webp') para super compressão e loading="lazy"
+                      src={urlFor(noticia.imagemDestaque).width(600).format('webp').url()} 
+                      alt={noticia.titulo} 
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[#A6948D]">
+                      <svg className="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
 
-          {/* Bloco do Texto */}
-          <div className="p-6 md:p-8 flex flex-col flex-1">
-            <time className="text-[11px] md:text-xs font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
-              {format(new Date(noticia.dataPublicacao), "dd 'de' MMM, yyyy", { locale: ptBR })}
-            </time>
-            <h3 className="text-lg md:text-xl font-serif font-bold text-[#401D10] mb-3 group-hover:text-[#592C1C] transition-colors leading-tight line-clamp-2">
-              {noticia.titulo}
-            </h3>
-            <p className="text-[#735A51] text-sm line-clamp-2 mb-4 flex-1">
-              {noticia.resumo}
-            </p>
-            <span className="text-[#592C1C] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
-              Ler matéria <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-            </span>
-          </div>
-        </Link>
-      ))
-    ) : (
-      <p className="text-[#735A51] italic px-2">Nenhuma notícia recente publicada.</p>
-    )}
-  </div>
-</section>
+                {/* Bloco do Texto */}
+                <div className="p-6 md:p-8 flex flex-col flex-1">
+                  <time className="text-[11px] md:text-xs font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
+                    {format(new Date(noticia.dataPublicacao), "dd 'de' MMM, yyyy", { locale: ptBR })}
+                  </time>
+                  <h3 className="text-lg md:text-xl font-serif font-bold text-[#401D10] mb-3 group-hover:text-[#592C1C] transition-colors leading-tight line-clamp-2">
+                    {noticia.titulo}
+                  </h3>
+                  <p className="text-[#735A51] text-sm line-clamp-2 mb-4 flex-1">
+                    {noticia.resumo}
+                  </p>
+                  <span className="text-[#592C1C] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
+                    Ler matéria <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                  </span>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <p className="text-[#735A51] italic px-2">Nenhuma notícia recente publicada.</p>
+          )}
+        </div>
+      </section>
 
       {/* =========================================
           SEÇÃO 3: CARRETEL DE EVENTOS (DADOS REAIS)
@@ -279,19 +280,22 @@ export default async function Home() {
         </div>
       </section>
 
-{/* =========================================
+      {/* =========================================
           SEÇÃO 5: CONHEÇA A PARÓQUIA E SECRETARIA
       ========================================= */}
-      {/* Aumentei a largura máxima (max-w-7xl) para caberem 3 colunas com folga */}
       <section className="py-12 md:py-24 px-6 max-w-7xl mx-auto w-full">
         <h2 className="text-2xl md:text-4xl font-serif font-bold text-[#401D10] text-center mb-8 md:mb-12">Nossa Estrutura</h2>
         
-        {/* Transformado em 3 colunas (lg:grid-cols-3) para colocar a Secretaria no meio */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
           
           {/* CAIXA 1: HISTÓRIA (Fica na Esquerda) */}
           <Link href="/sobre" className="relative h-full min-h-[320px] rounded-[2.5rem] overflow-hidden group shadow-sm">
-            <img src="/index2.png" alt="Igreja por dentro" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <img 
+              src="/index2.png" 
+              alt="Igreja por dentro" 
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Conheça nossa História</h3>
@@ -301,23 +305,23 @@ export default async function Home() {
               </p>
             </div>
           </Link>
-{/* CAIXA 2: SECRETARIA (Fica no Meio - Mantendo layout dividido) */}
-          {/* Adicionamos 'justify-center' aqui no pai para ele centralizar tudo naturalmente */}
+
+          {/* CAIXA 2: SECRETARIA (Fica no Meio - Mantendo layout dividido) */}
           <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-6 xl:p-8 rounded-[2.5rem] shadow-sm flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-8 group hover:shadow-xl transition-all duration-300 h-full">
             
-            {/* Título e Ícone (Removido o h-full que estava 'empurrando' o texto para fora no mobile) */}
+            {/* Título e Ícone */}
             <div className="flex flex-col items-center justify-center text-center shrink-0">
               <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-4 group-hover:scale-110 transition-transform">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
               </div>
               <h3 className="text-xl font-serif font-bold text-white mb-4">Secretaria</h3>
               
-              <a href="https://wa.me/5549988141513" target="_blank" rel="noopener noreferrer" className="px-6 py-2.5 bg-white text-[#401D10] font-bold rounded-xl hover:bg-[#F2F2F2] transition-colors text-sm w-full shadow-sm hidden xl:block text-center">
+              <a href="https://wa.me/5549988141513?text=Olá%20Gostaria%20de%20falar%20com%20a%20Secretária%20da%20Paróquia." target="_blank" rel="noopener noreferrer" className="px-6 py-2.5 bg-white text-[#401D10] font-bold rounded-xl hover:bg-[#F2F2F2] transition-colors text-sm w-full shadow-sm hidden xl:block text-center">
                 Falar Agora
               </a>
             </div>
 
-            {/* Informações detalhadas (Horário, Endereço, etc) - Removido o h-full daqui também */}
+            {/* Informações detalhadas (Horário, Endereço, etc) */}
             <div className="text-white/80 leading-relaxed text-sm flex flex-col justify-center gap-4 flex-1 w-full text-center xl:text-left">
               
               <div className="border-b border-white/10 pb-3">
@@ -327,18 +331,20 @@ export default async function Home() {
 
               <div className="border-b border-white/10 pb-3">
                 <span className="block font-serif font-bold text-base text-white mb-1">📍 Endereço</span>
-                <span>R. Iguaçu, 130 - SC</span>
+                <span>R. Iguaçu, 130, Coronel Freitas - SC, 89840-000</span>
               </div>
 
               <div className="grid grid-cols-1 gap-3">
                 <div className="border-b xl:border-none border-white/10 pb-3 xl:pb-0">
                   <span className="block font-serif font-bold text-base text-white mb-1">📞 Contatos</span>
-                  <span>(49) 3347-0236 | Whats: (49) 98814-1513</span>
+                  <span>Fixo: (49) 3347-0236  </span>
+                  <span>Whats: (49) 98814-1513</span>
+               
                 </div>
                 <div>
                   <span className="block font-serif font-bold text-base text-white mb-1">✉️ E-mail</span>
-                  <a href="mailto:contato@paroquia.com.br" className="hover:text-white hover:underline transition-colors break-words">
-                    contato@paroquia.com.br
+                  <a href="pcoronelfreitas@yahoo.com.br" className="hover:text-white hover:underline transition-colors break-words">
+                    pcoronelfreitas@yahoo.com.br
                   </a>
                 </div>
               </div>
@@ -352,7 +358,12 @@ export default async function Home() {
 
           {/* CAIXA 3: COMUNIDADES (Fica na Direita) */}
           <Link href="/comunidades" className="relative h-full min-h-[320px] rounded-[2.5rem] overflow-hidden group shadow-sm">
-            <img src="/index3.png" alt="Pessoas na igreja" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <img 
+              src="/index3.png" 
+              alt="Pessoas na igreja" 
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Nossas Comunidades</h3>
