@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-// Adicionamos as importações de data necessárias para o novo calendário
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
 
 interface Leitura {
   referencia: string;
-  titulo: string;
+  titulo?: string;
+  refrao?: string; 
   texto: string;
 }
 
@@ -27,6 +27,166 @@ interface ReflexaoData {
   texto?: string;
 }
 
+// =========================================
+// FUNÇÃO INTELIGENTE PARA FORMATAR ESTROFES E VERSÍCULOS
+// =========================================
+const formatarTextoBiblico = (
+  texto: string | undefined, 
+  isSalmo: boolean = false, 
+  refrao?: string,
+  referencia?: string
+) => {
+  if (!texto) return null;
+
+  // 1. PESCA O PRIMEIRO NÚMERO DA REFERÊNCIA
+  let primeiroVersiculoDaReferencia = "";
+  if (referencia && !isSalmo) {
+    const matchReferencia = referencia.match(/,\s*(\d{1,3})/);
+    if (matchReferencia) {
+      primeiroVersiculoDaReferencia = matchReferencia[1];
+    }
+  }
+
+  let textoProcessado = texto;
+
+  // 2. Converte números sobrescritos
+  const mapSuper: Record<string, string> = {
+    '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'
+  };
+  textoProcessado = textoProcessado.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, (match) => {
+    const num = match.split('').map(c => mapSuper[c]).join('');
+    return `\n${num} `;
+  });
+
+  // 3. O "DESGRUDADOR"
+  textoProcessado = textoProcessado.replace(/(\d{1,3}(?:[,.]\s*\d{1,3})?[a-z]?)([a-zA-ZÀ-Ÿ])/g, "$1 $2");
+
+  // 4. LIMPEZA AVANÇADA (BASEADA NA REFERÊNCIA)
+  if (primeiroVersiculoDaReferencia) {
+    const regexLimpaCapitulo = new RegExp(`(^|\\s)\\d{1,3}[.-]?\\s+(${primeiroVersiculoDaReferencia}\\s+[A-Za-zÀ-Ÿ“"'])`, 'g');
+    textoProcessado = textoProcessado.replace(regexLimpaCapitulo, "$1$2");
+    
+    const regexPrimeiroVers = new RegExp(`([a-zà-ÿ.,!?:;]\\s*)${primeiroVersiculoDaReferencia}[.-]?\\s+([A-Za-zÀ-Ÿ“"'])`, 'g');
+    textoProcessado = textoProcessado.replace(regexPrimeiroVers, "$1 $2");
+  }
+
+  // 5. QUEBRA DE LINHA INTELIGENTE
+  textoProcessado = textoProcessado.replace(/^(\d{1,3}(?:[,.]\s*\d{1,3})?[a-z]?)\s+([A-Za-zÀ-Ÿ“"'])/g, "$1 $2");
+  textoProcessado = textoProcessado.replace(/([a-zA-ZÀ-Ÿ.,!?:;”"’')\]}]\s*)(\d{1,3}(?:[,.]\s*\d{1,3})?[a-z]?)\s+([A-Za-zÀ-Ÿ“"'])/g, "$1\n$2 $3");
+  
+  // 6. Quebra de estrofes (Asteriscos)
+  textoProcessado = textoProcessado.replace(/\*\s+(?=[A-ZÀ-Ÿa-z])/g, "*\n");
+
+  // 7. Limpa sujeiras de "R." da API para Salmos
+  if (isSalmo) {
+    textoProcessado = textoProcessado.replace(/\s*(—\s*)?(R\.|R\/|℟)\s*$/gmi, "");
+  }
+
+  const linhas = textoProcessado.split(/\n+/).map(l => l.trim()).filter(Boolean);
+
+  const blocos: { type: string; numero?: string; linhas: string[] }[] = [];
+  let blocoAtual: any = null;
+  let jaAchouPrimeiroVersiculo = false;
+
+  linhas.forEach(linha => {
+    // Evita repetir o refrão no meio do texto do salmo
+    if (isSalmo && refrao) {
+      const linhaSemIndicador = linha.replace(/^(—\s*)?(R\.|R\/|℟)\s*/i, '');
+      const refraoLimpo = refrao.replace(/[.,!?;\s]/g, '').toLowerCase();
+      const linhaLimpa = linhaSemIndicador.replace(/[.,!?;\s]/g, '').toLowerCase();
+      
+      if (linhaLimpa === refraoLimpo || linhaLimpa === 'r' || linhaLimpa === '' || linhaLimpa === '℟') {
+        return;
+      }
+    }
+
+    const matchVersiculo = linha.match(/^(\d{1,3}(?:[,.]\s*\d{1,3})?[a-z]?|—|-)\s*[.-]?\s*(.*)/);
+
+    if (matchVersiculo) {
+      const numeroEncontrado = matchVersiculo[1];
+      const isNumero = /^\d/.test(numeroEncontrado);
+
+      // REGRA DO PULO
+      if (isNumero && !isSalmo && !jaAchouPrimeiroVersiculo && primeiroVersiculoDaReferencia && numeroEncontrado !== primeiroVersiculoDaReferencia) {
+        const textoReal = numeroEncontrado + " " + matchVersiculo[2];
+        if (blocoAtual) {
+          blocoAtual.linhas[blocoAtual.linhas.length - 1] += " " + textoReal;
+        } else {
+          blocoAtual = { type: 'texto', linhas: [textoReal] };
+        }
+        return; 
+      }
+
+      if (blocoAtual) blocos.push(blocoAtual);
+      blocoAtual = { type: 'versiculo', numero: numeroEncontrado, linhas: [matchVersiculo[2]] };
+      if (isNumero) jaAchouPrimeiroVersiculo = true;
+
+    } else {
+      if (blocoAtual) {
+        blocoAtual.linhas.push(linha);
+      } else {
+        // INJEÇÃO FINAL
+        if (!jaAchouPrimeiroVersiculo && !isSalmo && primeiroVersiculoDaReferencia) {
+          blocoAtual = { type: 'versiculo', numero: primeiroVersiculoDaReferencia, linhas: [linha] };
+          jaAchouPrimeiroVersiculo = true;
+        } else {
+          blocoAtual = { type: 'texto', linhas: [linha] };
+        }
+      }
+    }
+  });
+  if (blocoAtual) blocos.push(blocoAtual);
+
+  const textClasses = `text-lg md:text-xl leading-relaxed md:leading-loose font-serif text-[#401D10]`;
+  const colunaEsquerdaClasses = `w-8 md:w-10 shrink-0 text-right select-none`;
+
+  return (
+    <div className="space-y-3 md:space-y-4 mt-4">
+      
+      {/* REFRÃO NO TOPO */}
+      {isSalmo && refrao && (
+        <div className="flex flex-row gap-3 md:gap-5 items-start w-full mb-6">
+          <div className={`text-[#E53E3E] font-serif text-2xl md:text-3xl ${colunaEsquerdaClasses} leading-none pt-0.5 md:pt-1`}>
+            ℟.
+          </div>
+          <div className={`${textClasses} font-bold`}>
+            {refrao}
+          </div>
+        </div>
+      )}
+
+      {/* VERSÍCULOS E ESTROFES */}
+      {blocos.map((bloco, index) => {
+        if (bloco.type === 'versiculo') {
+          return (
+            <div key={index} className="flex flex-row gap-3 md:gap-5 items-start w-full">
+              <div className={`text-[#E53E3E] font-bold text-sm md:text-base mt-1 md:mt-1.5 ${colunaEsquerdaClasses} whitespace-nowrap`}>
+                {bloco.numero}
+              </div>
+              <div className={`flex-1 flex flex-col gap-1 md:gap-1.5 ${textClasses}`}>
+                {bloco.linhas.map((linha, i) => (
+                  <span key={i} className="block">{linha}</span>
+                ))}
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div key={index} className="flex flex-row gap-3 md:gap-5 items-start w-full">
+            <div className={`${colunaEsquerdaClasses} hidden sm:block`}></div>
+            <div className={`flex-1 flex flex-col gap-1 md:gap-1.5 ${textClasses}`}>
+              {bloco.linhas.map((linha, i) => (
+                <span key={i} className="block">{linha}</span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export default function LiturgiaClient({ 
   liturgia, 
   reflexao,
@@ -37,11 +197,8 @@ export default function LiturgiaClient({
   dataSelecionada: string;
 }) {
   const [montado, setMontado] = useState<boolean>(false); 
-  
-  // Estados do Modal de Calendário
   const [modalCalendarioAberto, setModalCalendarioAberto] = useState<boolean>(false);
   const [mesVisualizado, setMesVisualizado] = useState<Date>(new Date());
-  
   const router = useRouter(); 
 
   useEffect(() => {
@@ -81,6 +238,27 @@ export default function LiturgiaClient({
     }
   };
 
+  // =========================================
+  // MATRIZ DO CALENDÁRIO (CORREÇÃO DO ERRO)
+  // =========================================
+  const primeiroDiaDoMes = new Date(mesVisualizado.getFullYear(), mesVisualizado.getMonth(), 1);
+  const diaDaSemanaPrimeiroDia = primeiroDiaDoMes.getDay(); // 0 = Dom, 1 = Seg...
+  const ultimoDiaDoMes = new Date(mesVisualizado.getFullYear(), mesVisualizado.getMonth() + 1, 0);
+  const totalDiasNoMes = ultimoDiaDoMes.getDate();
+
+  const diasMatriz: (Date | null)[] = [];
+  
+  // Preenche os espaços vazios do início do mês
+  for (let i = 0; i < diaDaSemanaPrimeiroDia; i++) {
+    diasMatriz.push(null);
+  }
+  
+  // Preenche os dias reais
+  for (let i = 1; i <= totalDiasNoMes; i++) {
+    diasMatriz.push(new Date(mesVisualizado.getFullYear(), mesVisualizado.getMonth(), i));
+  }
+  // =========================================
+
   const indice = [];
   if (liturgia) {
     indice.push({ id: 'primeira-leitura', label: '1ª Leitura' });
@@ -111,13 +289,9 @@ export default function LiturgiaClient({
     return 'bg-[#A6948D]';
   };
 
-  const getNomeDia = (data: Date) => {
-    const dias = ['Domingo', '2ª feira', '3ª feira', '4ª feira', '5ª feira', '6ª feira', 'Sábado'];
-    return dias[data.getDay()];
-  };
-
   const formatarTextosCalendario = (data: Date, textoOriginal: string | undefined, ehSelecionado: boolean) => {
-    const diaSemana = getNomeDia(data);
+    const dias = ['Domingo', '2ª feira', '3ª feira', '4ª feira', '5ª feira', '6ª feira', 'Sábado'];
+    const diaSemana = dias[data.getDay()];
     
     if (!textoOriginal || !ehSelecionado) {
       return { linha1: diaSemana, linha2: 'Liturgia Diária' };
@@ -126,12 +300,7 @@ export default function LiturgiaClient({
     let textoLimpo = textoOriginal;
     const regexDias = /^(Segunda-feira|Terça-feira|Quarta-feira|Quinta-feira|Sexta-feira|Sábado|Domingo|2ª feira|3ª feira|4ª feira|5ª feira|6ª feira)[\s,-]*/i;
     textoLimpo = textoLimpo.replace(regexDias, '').trim();
-
-    if (textoLimpo) {
-      textoLimpo = textoLimpo.charAt(0).toUpperCase() + textoLimpo.slice(1);
-    } else {
-      textoLimpo = 'Liturgia Diária';
-    }
+    textoLimpo = textoLimpo ? textoLimpo.charAt(0).toUpperCase() + textoLimpo.slice(1) : 'Liturgia Diária';
 
     return { linha1: diaSemana, linha2: textoLimpo };
   };
@@ -166,19 +335,6 @@ export default function LiturgiaClient({
     }
     return referenciaStr;
   };
-
-  const anoVis = mesVisualizado.getFullYear();
-  const mesVis = mesVisualizado.getMonth();
-  const primeiroDiaMes = new Date(anoVis, mesVis, 1).getDay(); 
-  const diasNoMes = new Date(anoVis, mesVis + 1, 0).getDate();
-
-  const diasMatriz = [];
-  for (let i = 0; i < primeiroDiaMes; i++) {
-    diasMatriz.push(null);
-  }
-  for (let i = 1; i <= diasNoMes; i++) {
-    diasMatriz.push(new Date(anoVis, mesVis, i));
-  }
 
   if (!montado) {
     return <div className="min-h-screen bg-[#F2F2F2]"></div>;
@@ -224,8 +380,6 @@ export default function LiturgiaClient({
                 Hoje
               </button>
             )}
-            
-            {/* BOTÃO QUE ABRE O NOVO POP-UP DO CALENDÁRIO (MOBILE) */}
             <button onClick={abrirCalendario} className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm border border-[#A6948D]/30 text-[#592C1C] active:scale-95 transition-transform">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             </button>
@@ -300,43 +454,86 @@ export default function LiturgiaClient({
 
               {/* CENTRO: LITURGIA */}
               <div className="flex-1 w-full min-w-0 bg-white rounded-[2rem] shadow-sm border border-[#A6948D]/20 overflow-hidden">
+                
+                {/* PRIMEIRA LEITURA */}
                 <section id="primeira-leitura" className="p-8 md:p-12 border-b border-[#A6948D]/20 scroll-mt-6">
-                  <div className="mb-6">
-                    <h2 className="text-xl font-bold text-[#A6948D] uppercase tracking-wider mb-1">Primeira Leitura</h2>
-                    <h3 className="text-2xl font-serif font-bold text-[#592C1C]">{expandirLivroBiblico(liturgia.primeiraLeitura?.referencia)}</h3>
+                  <div className="mb-4">
+                    <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Primeira Leitura</h2>
+                    <div className="flex flex-col gap-1">
+                      {liturgia.primeiraLeitura?.titulo && (
+                        <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                          {liturgia.primeiraLeitura.titulo}
+                        </h3>
+                      )}
+                      <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                        {expandirLivroBiblico(liturgia.primeiraLeitura?.referencia)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-[#401D10] text-lg md:text-xl leading-relaxed md:leading-loose font-serif whitespace-pre-wrap">{liturgia.primeiraLeitura?.texto}</div>
+                  {formatarTextoBiblico(liturgia.primeiraLeitura?.texto, false, undefined, liturgia.primeiraLeitura?.referencia)}
                 </section>
 
+                {/* SALMO RESPONSORIAL */}
                 <section id="salmo" className="p-8 md:p-12 border-b border-[#A6948D]/20 bg-[#A6948D]/5 scroll-mt-6">
-                  <div className="mb-6">
-                    <h2 className="text-xl font-bold text-[#A6948D] uppercase tracking-wider mb-1">Salmo Responsorial</h2>
-                    <h3 className="text-2xl font-serif font-bold text-[#592C1C]">{expandirLivroBiblico(liturgia.salmo?.referencia)}</h3>
+                  <div className="mb-4">
+                    <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Salmo Responsorial</h2>
+                    <div className="flex flex-col gap-1">
+                      {liturgia.salmo?.refrao && (
+                        <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                          {liturgia.salmo.refrao}
+                        </h3>
+                      )}
+                      <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                        {expandirLivroBiblico(liturgia.salmo?.referencia)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-[#401D10] text-lg md:text-xl leading-relaxed md:leading-loose font-serif whitespace-pre-wrap font-medium italic">{liturgia.salmo?.texto}</div>
+                  {formatarTextoBiblico(liturgia.salmo?.texto, true, liturgia.salmo?.refrao, liturgia.salmo?.referencia)}
                 </section>
 
+                {/* SEGUNDA LEITURA */}
                 {liturgia.segundaLeitura && typeof liturgia.segundaLeitura !== 'string' && (
                   <section id="segunda-leitura" className="p-8 md:p-12 border-b border-[#A6948D]/20 scroll-mt-6">
-                    <div className="mb-6">
-                      <h2 className="text-xl font-bold text-[#A6948D] uppercase tracking-wider mb-1">Segunda Leitura</h2>
-                      <h3 className="text-2xl font-serif font-bold text-[#592C1C]">{expandirLivroBiblico((liturgia.segundaLeitura as Leitura).referencia)}</h3>
+                    <div className="mb-4">
+                      <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Segunda Leitura</h2>
+                      <div className="flex flex-col gap-1">
+                        {(liturgia.segundaLeitura as Leitura).titulo && (
+                          <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                            {(liturgia.segundaLeitura as Leitura).titulo}
+                          </h3>
+                        )}
+                        <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                          {expandirLivroBiblico((liturgia.segundaLeitura as Leitura).referencia)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="text-[#401D10] text-lg md:text-xl leading-relaxed md:leading-loose font-serif whitespace-pre-wrap">{(liturgia.segundaLeitura as Leitura).texto}</div>
+                    {formatarTextoBiblico((liturgia.segundaLeitura as Leitura).texto, false, undefined, (liturgia.segundaLeitura as Leitura).referencia)}
                   </section>
                 )}
 
+                {/* EVANGELHO */}
                 <section id="evangelho" className="p-8 md:p-12 scroll-mt-6">
-                  <div className="mb-6">
-                    <h2 className="text-xl font-bold text-[#A6948D] uppercase tracking-wider mb-1">Evangelho</h2>
-                    <h3 className="text-2xl font-serif font-bold text-[#592C1C]">{expandirLivroBiblico(liturgia.evangelho?.referencia)}</h3>
+                  <div className="mb-4">
+                    <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Evangelho</h2>
+                    <div className="flex flex-col gap-1">
+                      {liturgia.evangelho?.titulo && (
+                        <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                          {liturgia.evangelho.titulo}
+                        </h3>
+                      )}
+                      <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                        {expandirLivroBiblico(liturgia.evangelho?.referencia)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-[#401D10] text-lg md:text-xl leading-relaxed md:leading-loose font-serif whitespace-pre-wrap">{liturgia.evangelho?.texto}</div>
-                  <div className="mt-8 pt-8 border-t border-[#A6948D]/20 text-center text-[#735A51] font-serif italic">
+                  {formatarTextoBiblico(liturgia.evangelho?.texto, false, undefined, liturgia.evangelho?.referencia)}
+                  
+                  <div className="mt-10 pt-8 border-t border-[#A6948D]/20 text-center text-[#735A51] font-serif italic text-lg">
                     — Palavra da Salvação. <br/> — Glória a vós, Senhor.
                   </div>
                 </section>
 
+                {/* REFLEXÃO DO SANITY */}
                 {reflexao && reflexao.texto && (
                   <section id="reflexao" className="p-8 md:p-12 border-t-[6px] border-[#592C1C] bg-[#A6948D]/10 relative overflow-hidden scroll-mt-6">
                     <svg className="absolute -right-4 -top-4 w-32 h-32 text-[#A6948D] opacity-10 transform rotate-12" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
@@ -364,12 +561,9 @@ export default function LiturgiaClient({
                           Hoje
                         </button>
                       )}
-                      
-                      {/* BOTÃO QUE ABRE O NOVO POP-UP (DESKTOP) */}
                       <button onClick={abrirCalendario} className="relative group cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#A6948D]/10 transition-colors">
                         <svg className="w-5 h-5 text-[#735A51] group-hover:text-[#592C1C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                       </button>
-
                     </div>
                   </div>
 
@@ -386,9 +580,7 @@ export default function LiturgiaClient({
                           key={i}
                           onClick={() => navegarParaData(d)}
                           className={`flex items-start gap-4 p-3 rounded-xl transition-all text-left w-full group ${
-                            ehSelecionado 
-                              ? 'bg-[#A6948D]/10 ring-1 ring-[#A6948D]/30 shadow-sm' 
-                              : 'hover:bg-[#A6948D]/5'
+                            ehSelecionado ? 'bg-[#A6948D]/10 ring-1 ring-[#A6948D]/30 shadow-sm' : 'hover:bg-[#A6948D]/5'
                           }`}
                         >
                           <div className="flex flex-col items-center justify-start min-w-[2rem] pt-1">
@@ -397,7 +589,6 @@ export default function LiturgiaClient({
                             </span>
                             <div className={`w-[12px] h-[12px] rounded-full mt-2 ${corBolinha}`}></div>
                           </div>
-                          
                           <div className="flex flex-col flex-1 pt-0.5">
                             <span className={`text-[15px] ${ehSelecionado ? 'text-[#401D10] font-semibold' : 'text-[#735A51] group-hover:text-[#401D10]'}`}>
                               {linha1}
@@ -419,17 +610,14 @@ export default function LiturgiaClient({
       </div>
 
       {/* =========================================
-          MODAL POP-UP DO CALENDÁRIO (Design Atualizado)
+          MODAL POP-UP DO CALENDÁRIO
       ========================================= */}
       {modalCalendarioAberto && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          {/* Fundo escuro */}
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setModalCalendarioAberto(false)}></div>
           
-          {/* Caixa do Calendário */}
           <div className="relative bg-white w-full max-w-[340px] rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             
-            {/* Header: Mês e Setas */}
             <div className="bg-[#FAFAFA] flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#A6948D]/10">
               <button onClick={mesAnterior} className="text-[#401D10] hover:text-[#592C1C] transition-colors p-2 -ml-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
@@ -442,9 +630,7 @@ export default function LiturgiaClient({
               </button>
             </div>
 
-            {/* Grid de Dias */}
             <div className="p-6">
-              {/* Cabeçalho dos dias da semana */}
               <div className="grid grid-cols-7 mb-4">
                 {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map((dia, idx) => (
                   <div key={idx} className="text-center text-[10px] font-bold text-[#735A51] tracking-wider">
@@ -453,7 +639,6 @@ export default function LiturgiaClient({
                 ))}
               </div>
 
-              {/* Números */}
               <div className="grid grid-cols-7 gap-y-4 text-center">
                 {diasMatriz.map((dia, index) => {
                   if (!dia) return <div key={index}></div>;
@@ -482,7 +667,6 @@ export default function LiturgiaClient({
               </div>
             </div>
 
-            {/* Footer: Cancelar */}
             <div className="bg-[#FAFAFA] border-t border-[#A6948D]/10 px-6 py-4 flex justify-end">
               <button 
                 onClick={() => setModalCalendarioAberto(false)}

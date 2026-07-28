@@ -3,7 +3,6 @@ import { client } from '../../lib/sanity';
 import LiturgiaClient from './LiturgiaClient';
 
 // Força o Next.js a sempre atualizar a página em tempo real. 
-// Assim, ao dar meia-noite, a página muda instantaneamente.
 export const dynamic = 'force-dynamic';
 
 async function getLiturgiaDoDia(dataStr?: string) {
@@ -21,11 +20,18 @@ async function getLiturgiaDoDia(dataStr?: string) {
       diaStr = String(dataAtual.getDate()).padStart(2, '0');
     }
 
-    const apiUrl = `https://liturgia.up.railway.app/?dia=${diaStr}&mes=${mesStr}&ano=${anoStr}`;
-    const res = await fetch(apiUrl, { cache: 'no-store' }); // Garante que a API não seja cacheada
+     const apiUrl = `https://liturgia.up.railway.app/?dia=${diaStr}&mes=${mesStr}&ano=${anoStr}`;
+    const res = await fetch(apiUrl, { cache: 'no-store' }); 
     
-    if (!res.ok) return null;
-    return await res.json();
+    if (!res.ok) {
+       console.error("Erro ao buscar API da Liturgia:", res.status);
+       return null;
+    }
+    
+    const dados = await res.json(); 
+    console.log("DADOS DA API DA LITURGIA DE HOJE:", dados);
+    return dados;
+
   } catch (error) {
     console.error("Erro ao buscar a liturgia:", error);
     return null;
