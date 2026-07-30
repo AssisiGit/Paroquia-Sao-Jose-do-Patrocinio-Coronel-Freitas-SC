@@ -10,6 +10,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* LIGAMOS O TAILWIND À VARIÁVEL DO NEXT.JS */
+ 
+  --font-merriweather: var(--font-merriweather), serif;
+
+  --font-noticiatextbold: var(--font-noticiatextbold), serif;
+
+  --font-noticiatexrregular: var(--font-noticiatexrregular), serif;
+
+  --font-ebgaramond: var(--font-ebgaramond), serif;
+
+  --font-breeSerif: var(--font-breeSerif), serif;
 }
 
 @media (prefers-color-scheme: dark) {

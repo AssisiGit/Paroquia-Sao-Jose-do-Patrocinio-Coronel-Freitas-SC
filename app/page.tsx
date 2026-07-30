@@ -76,14 +76,16 @@ export default async function Home() {
           alt="Fachada da Paróquia São José do Patrocínio" 
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/5 to-transparent"></div>
         <div className="absolute inset-0 bg-black/10"></div>
 
-        <div className="relative z-10 text-center px-4 md:px-6 w-full flex flex-col items-center justify-center pt-10">
-          <span className="text-[#A6948D] font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4 block drop-shadow-md">
+<div className="relative z-10 text-center px-4 md:px-6 w-full flex flex-col items-center justify-center -mt-90">
+          <span className="text-[#F2F2F2] font-ebgaramond tracking-[0.2em] uppercase text-lg md:text-xl mb-4 block drop-shadow-md">
             Bem-vindo à
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight drop-shadow-2xl max-w-4xl">
+          
+          {/* CORREÇÃO: Usar font-manufacturing (tudo minúsculo, igual à variável do CSS) */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-merriweather font-bold text-white leading-tight drop-shadow-2xl max-w-4xl tracking-wider">
             Paróquia São José <br className="hidden md:block" />
             <span className="text-[#F2F2F2]">do Patrocínio</span>
           </h1>
@@ -103,13 +105,14 @@ export default async function Home() {
                 className="w-full h-auto object-contain mx-auto scale-125 md:scale-150 transform transition-transform" 
               />
             </div>
-            
+            [#401D10]
             <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#401D10] mb-4 md:mb-6 leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-merriweather font-bold text-[#401D10] leading-tight drop-shadow-2xl max-w-4xl tracking-wider">
                 Uma comunidade de fé, <br className="hidden md:block" />
                 esperança e caridade.
               </h2>
-            <p className="text-[#735A51] text-base md:text-lg lg:text-xl leading-relaxed font-serif">
+              <br></br>
+            <p className="text-[#735A51] md:text-lg lg:text-xl font-noticiatexrregular">
               Somos uma rede viva de comunidades unidas pelo amor de Cristo e inspiradas 
               pelos exemplos de São José e São Francisco de Assis. Aqui, buscamos acolher 
               cada irmão, vivenciar a Palavra e celebrar os sacramentos em fraternidade. 
@@ -124,8 +127,8 @@ export default async function Home() {
       ========================================= */}
       <section className="py-12 w-full max-w-7xl mx-auto overflow-hidden">
         <div className="flex justify-between items-end mb-8 px-6 md:px-8">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10]">Últimas Notícias</h2>
-          <Link href="/noticias" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
+          <h2 className="text-2xl md:text-3xl font-merriweather font-bold text-[#401D10]">Últimas Notícias</h2>
+          <Link href="/noticias" className="text-[#592C1C] font-breeSerif hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
             Ver todas
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
           </Link>
@@ -162,16 +165,16 @@ export default async function Home() {
 
                 {/* Bloco do Texto */}
                 <div className="p-6 md:p-8 flex flex-col flex-1">
-                  <time className="text-[11px] md:text-xs font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
+                  <time className="text-[11px] md:text-xs font-breeSerif font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
                     {format(new Date(noticia.dataPublicacao), "dd 'de' MMM, yyyy", { locale: ptBR })}
                   </time>
-                  <h3 className="text-lg md:text-xl font-serif font-bold text-[#401D10] mb-3 group-hover:text-[#592C1C] transition-colors leading-tight line-clamp-2">
+                  <h3 className="text-lg md:text-xl font-merriweather font-bold text-[#401D10] mb-3 group-hover:text-[#592C1C] transition-colors leading-tight line-clamp-2">
                     {noticia.titulo}
                   </h3>
-                  <p className="text-[#735A51] text-sm line-clamp-2 mb-4 flex-1">
+                  <p className="text-[#735A51] font-noticiatexrregular text-sm line-clamp-2 mb-4 flex-1">
                     {noticia.resumo}
                   </p>
-                  <span className="text-[#592C1C] text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
+                  <span className="text-[#592C1C] text-sm font-noticiatextbold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
                     Ler matéria <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                   </span>
                 </div>
@@ -190,10 +193,10 @@ export default async function Home() {
         <div className="bg-[#A6948D]/5 rounded-none md:rounded-[3rem] border-y md:border border-[#A6948D]/20 py-12 mb-12">
           <div className="flex justify-between items-end mb-8 px-6 md:px-10">
             <div>
-              <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#401D10] mb-2">Próximos Eventos</h2>
-              <p className="text-[#735A51] font-medium text-sm md:text-base">A programação de hoje e amanhã</p>
+              <h2 className="text-2xl md:text-3xl font-merriweather font-bold text-[#401D10] mb-2">Próximos Eventos</h2>
+              <p className="text-[#735A51] font-noticiatexrregular text-sm md:text-base">A programação de hoje e amanhã</p>
             </div>
-            <Link href="/calendario" className="text-[#592C1C] font-bold hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
+            <Link href="/calendario" className="text-[#592C1C] font-breeSerif hover:text-[#401D10] transition-colors flex items-center gap-1 text-sm md:text-base hidden sm:flex shrink-0">
               Ver calendário
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
             </Link>
@@ -209,20 +212,20 @@ export default async function Home() {
 
                 return (
                   <div key={evento._id} className={`snap-start shrink-0 w-[80vw] sm:w-[260px] md:w-[300px] ${cores.bgCard} ${cores.textCard} p-6 rounded-3xl shadow-md transition-transform hover:-translate-y-1 duration-300`}>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
+                    <span className={`text-[10px] font-breeSerif uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
                       {evento.tipo}
                     </span>
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-lg md:text-xl font-serif font-medium pr-2 md:pr-4 leading-tight">{evento.titulo}</h4>
-                      <span className={`${cores.textHora} font-light text-xl md:text-2xl tracking-tight`}>
+                      <h4 className="text-lg md:text-xl font-merriweather font-merriweather pr-2 md:pr-4 leading-tight">{evento.titulo}</h4>
+                      <span className={`${cores.textHora} font-merriweather font-bold text-xl md:text-2xl tracking-tight`}>
                         {format(dataEvt, 'HH:mm')}
                       </span>
                     </div>
-                    <div className="space-y-1 text-xs md:text-sm mt-4 opacity-90">
+                    <div className="space-y-1 font-noticiatexrregular text-xs md:text-base mt-4">
                       <p className="flex items-center gap-2">📅 {rotuloDia}</p>
                       <p className="flex items-center gap-2">📍 {evento.local}</p>
                       {isMissa && evento.freiCelebrante && (
-                        <p className="flex items-center gap-2 mt-1">✝ {evento.freiCelebrante}</p>
+                        <p className="flex items-center gap-2 mt-1">† {evento.freiCelebrante}</p>
                       )}
                     </div>
                   </div>
@@ -230,7 +233,7 @@ export default async function Home() {
               })
             ) : (
               <div className="w-full text-center py-8">
-                <p className="text-[#735A51] font-medium bg-white/50 inline-block px-6 py-3 rounded-2xl border border-dashed border-[#A6948D]">
+                <p className="text-[#735A51] font-merriweather bg-white/50 inline-block px-6 py-3 rounded-2xl border border-dashed border-[#A6948D]">
                   Nenhum evento programado para hoje ou amanhã.
                 </p>
               </div>
@@ -238,7 +241,7 @@ export default async function Home() {
           </div>
           
           <div className="mt-4 px-6 text-center sm:hidden">
-            <Link href="/calendario" className="inline-block px-6 py-3 bg-[#A6948D]/20 text-[#592C1C] font-bold rounded-xl active:scale-95 transition-transform text-sm w-full">
+            <Link href="/calendario" className="inline-block px-6 py-3 bg-[#A6948D]/20 text-[#592C1C] font-ebgaramond rounded-xl active:scale-95 transition-transform text-sm w-full">
               Ver calendário completo
             </Link>
           </div>
@@ -255,11 +258,13 @@ export default async function Home() {
             <div className="w-16 h-16 md:w-20 md:h-20 bg-[#401D10]/10 rounded-full flex items-center justify-center text-[#592C1C] mb-6 group-hover:scale-110 transition-transform">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
             </div>
-            <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10] mb-3 md:mb-4">Liturgia Diária</h3>
-            <p className="text-[#735A51] mb-8 leading-relaxed text-sm md:text-base">
+            <h3 className="text-xl md:text-2xl font-merriweather font-bold text-[#401D10] mb-3 md:mb-4">Liturgia Diária</h3>
+            <p className="font-noticiatexrregular text-[#735A51] mb-8 leading-relaxed text-sm md:text-base">
               Acompanhe as leituras, o salmo e o evangelho do dia para nutrir sua espiritualidade com a Palavra de Deus.
             </p>
-            <Link href="/liturgia" className="mt-auto px-8 py-3.5 bg-[#401D10] text-white font-bold rounded-2xl hover:bg-[#592C1C] transition-colors w-full sm:w-auto text-sm md:text-base">
+            <Link 
+              href="/liturgia" 
+              className="mt-auto px-8 py-3.5 bg-[#401D10] text-white font-breeSerif font-bold text-center rounded-2xl hover:bg-[#592C1C] transition-colors w-full sm:w-auto text-sm md:text-lg">
               Ler a Liturgia de Hoje
             </Link>
           </div>
@@ -268,13 +273,16 @@ export default async function Home() {
             <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-6 group-hover:scale-110 transition-transform">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>
             </div>
-            <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-3 md:mb-4">Vela Virtual</h3>
-            <p className="text-white/80 mb-8 leading-relaxed text-sm md:text-base">
+            <h3 className="text-xl md:text-2xl font-merriweather font-bold text-white mb-3 md:mb-4">Vela Virtual</h3>
+            <p className="font-noticiatexrregular text-white/80 mb-8 leading-relaxed text-sm md:text-base">
               Acenda uma vela e deixe sua intenção em nosso site. Sua prece ficará acesa espiritualmente por 9 dias em nossa novena.
             </p>
-            <Link href="/velas" className="mt-auto px-8 py-3.5 bg-white text-[#401D10] font-bold rounded-2xl hover:bg-[#F2F2F2] transition-colors w-full sm:w-auto text-sm md:text-base">
-              Acender uma Vela
-            </Link>
+          <Link 
+            href="/velas" 
+            className="mt-auto px-8 py-3.5 bg-white text-[#401D10] font-breeSerif font-bold text-center rounded-2xl hover:bg-[#F2F2F2] transition-colors w-full sm:w-auto text-sm md:text-lg"
+          >
+            Acender uma Vela
+          </Link>
           </div>
 
         </div>
@@ -284,7 +292,7 @@ export default async function Home() {
           SEÇÃO 5: CONHEÇA A PARÓQUIA E SECRETARIA
       ========================================= */}
       <section className="py-12 md:py-24 px-6 max-w-7xl mx-auto w-full">
-        <h2 className="text-2xl md:text-4xl font-serif font-bold text-[#401D10] text-center mb-8 md:mb-12">Nossa Estrutura</h2>
+        <h2 className="text-2xl md:text-4xl font-merriweather font-bold text-[#401D10] text-center mb-8 md:mb-12">Nossa Estrutura</h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
           
@@ -298,8 +306,8 @@ export default async function Home() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Conheça nossa História</h3>
-              <p className="text-white/80 font-medium flex items-center gap-2 text-sm md:text-base">
+              <h3 className="text-xl md:text-2xl font-merriweather font-bold text-white mb-2">Conheça nossa História</h3>
+              <p className="text-white/80 font-noticiatexrregular flex items-center gap-2 text-sm md:text-base">
                 Nossos frades, padroeiro e caminhada
                 <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </p>
@@ -314,9 +322,9 @@ export default async function Home() {
               <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-4 group-hover:scale-110 transition-transform">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
               </div>
-              <h3 className="text-xl font-serif font-bold text-white mb-4">Secretaria</h3>
+              <h3 className="text-xl font-merriweather font-bold text-white mb-4">Secretaria</h3>
               
-              <a href="https://wa.me/5549988141513?text=Olá%20Gostaria%20de%20falar%20com%20a%20Secretária%20da%20Paróquia." target="_blank" rel="noopener noreferrer" className="px-6 py-2.5 bg-white text-[#401D10] font-bold rounded-xl hover:bg-[#F2F2F2] transition-colors text-sm w-full shadow-sm hidden xl:block text-center">
+              <a href="https://wa.me/5549988141513?text=Olá%20Gostaria%20de%20falar%20com%20a%20Secretária%20da%20Paróquia." target="_blank" rel="noopener noreferrer" className="px-6 py-2.5 bg-white text-[#401D10] font-breeSerif font-bold rounded-xl hover:bg-[#F2F2F2] transition-colors text-sm w-full shadow-sm hidden xl:block text-center">
                 Falar Agora
               </a>
             </div>
@@ -325,24 +333,24 @@ export default async function Home() {
             <div className="text-white/80 leading-relaxed text-sm flex flex-col justify-center gap-4 flex-1 w-full text-center xl:text-left">
               
               <div className="border-b border-white/10 pb-3">
-                <span className="block font-serif font-bold text-base text-white mb-1">🕗 Horário</span>
+                <span className="block font-merriweather font-bold text-base text-white mb-1">🕗 Horário</span>
                 <span>08h às 11:30 | 13:30 às 17:30</span>
               </div>
 
               <div className="border-b border-white/10 pb-3">
-                <span className="block font-serif font-bold text-base text-white mb-1">📍 Endereço</span>
+                <span className="block font-merriweather font-bold text-base text-white mb-1">📍 Endereço</span>
                 <span>R. Iguaçu, 130, Coronel Freitas - SC, 89840-000</span>
               </div>
 
               <div className="grid grid-cols-1 gap-3">
                 <div className="border-b xl:border-none border-white/10 pb-3 xl:pb-0">
-                  <span className="block font-serif font-bold text-base text-white mb-1">📞 Contatos</span>
+                  <span className="block font-merriweather font-bold text-base text-white mb-1">📞 Contatos</span>
                   <span>Fixo: (49) 3347-0236  </span>
                   <span>Whats: (49) 98814-1513</span>
                
                 </div>
                 <div>
-                  <span className="block font-serif font-bold text-base text-white mb-1">✉️ E-mail</span>
+                  <span className="block font-merriweather font-bold text-base text-white mb-1">✉️ E-mail</span>
                   <a href="pcoronelfreitas@yahoo.com.br" className="hover:text-white hover:underline transition-colors break-words">
                     pcoronelfreitas@yahoo.com.br
                   </a>
@@ -366,13 +374,13 @@ export default async function Home() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-2">Nossas Comunidades</h3>
-              <p className="text-white/80 font-medium flex items-center gap-2 text-sm md:text-base">
-                Encontre a igreja mais próxima de você
+              <h3 className="text-xl md:text-2xl font-merriweather font-bold text-white mb-2">Nossas Comunidades</h3>
+              <p className="text-white/80 font-noticiatexrregular flex items-center gap-2 text-sm md:text-base">
+                Conheça as nossas comunidades
                 <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </p>
             </div>
-          </Link>
+          </Link> 
 
         </div>
       </section>

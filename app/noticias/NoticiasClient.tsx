@@ -92,10 +92,10 @@ export default function NoticiasClient({ noticiasSanity = [] }: { noticiasSanity
 
         {/* TÍTULO DA PÁGINA */}
         <div className="text-center mb-8 md:mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif text-[#401D10] tracking-tight mb-3 md:mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold font-merriweather text-[#401D10] tracking-tight mb-3 md:mb-4">
             Últimas Notícias
           </h1>
-          <p className="text-sm md:text-lg text-[#735A51] max-w-2xl mx-auto px-2">
+          <p className="font-noticiatexrregular text-sm md:text-lg text-[#735A51] max-w-2xl mx-auto px-2">
             Acompanhe os avisos, informativos e acontecimentos da Paróquia São José do Patrocínio e de nossas comunidades.
           </p>
         </div>
@@ -161,11 +161,11 @@ export default function NoticiasClient({ noticiasSanity = [] }: { noticiasSanity
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setOrdemAberto(false)}></div>
                   <div className="absolute right-0 mt-2 w-[170px] bg-white rounded-xl shadow-xl border border-[#A6948D]/20 z-50 overflow-hidden flex flex-col py-2 transform origin-top transition-all">
-                    <button onClick={() => { setOrdem('recente'); setOrdemAberto(false); }} className={`px-4 py-2.5 text-left transition-colors flex items-center justify-between ${ordem === 'recente' ? 'bg-[#F2F2F2] text-[#401D10] font-bold' : 'text-[#735A51] hover:bg-[#F2F2F2]/50 hover:text-[#401D10]'}`}>
+                    <button onClick={() => { setOrdem('recente'); setOrdemAberto(false); }} className={`font-ebgaramond px-4 py-2.5 text-left transition-colors flex items-center justify-between ${ordem === 'recente' ? 'bg-[#F2F2F2] text-[#401D10] font-bold' : 'text-[#735A51] hover:bg-[#F2F2F2]/50 hover:text-[#401D10]'}`}>
                       Mais recentes
                       {ordem === 'recente' && <svg className="w-4 h-4 text-[#592C1C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
                     </button>
-                    <button onClick={() => { setOrdem('antiga'); setOrdemAberto(false); }} className={`px-4 py-2.5 text-left transition-colors flex items-center justify-between ${ordem === 'antiga' ? 'bg-[#F2F2F2] text-[#401D10] font-bold' : 'text-[#735A51] hover:bg-[#F2F2F2]/50 hover:text-[#401D10]'}`}>
+                    <button onClick={() => { setOrdem('antiga'); setOrdemAberto(false); }} className={`font-ebgaramond px-4 py-2.5 text-left transition-colors flex items-center justify-between ${ordem === 'antiga' ? 'bg-[#F2F2F2] text-[#401D10] font-bold' : 'text-[#735A51] hover:bg-[#F2F2F2]/50 hover:text-[#401D10]'}`}>
                       Mais antigas
                       {ordem === 'antiga' && <svg className="w-4 h-4 text-[#592C1C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
                     </button>
@@ -287,21 +287,21 @@ export default function NoticiasClient({ noticiasSanity = [] }: { noticiasSanity
                 </div>
 
                 <div className="p-8 flex flex-col flex-grow">
-                  <time className="text-sm font-bold text-[#A6948D] mb-3 uppercase tracking-wider">
+                  <time className="text-sm font-breeSerif font-bold text-[#A6948D] mb-3 uppercase tracking-wider">
                     {format(new Date(noticia.dataPublicacao), "dd 'de' MMMM, yyyy", { locale: ptBR })}
                   </time>
                   
-                  <h3 className="text-2xl font-serif font-bold text-[#401D10] leading-tight mb-4 group-hover:text-[#592C1C] transition-colors line-clamp-3">
+                  <h3 className="text-2xl font-merriweather font-bold text-[#401D10] leading-tight mb-4 group-hover:text-[#592C1C] transition-colors line-clamp-3">
                     {noticia.titulo}
                   </h3>
                   
-                  <p className="text-[#735A51] mb-6 line-clamp-3 flex-grow">
+                  <p className="font-noticiatexrregular text-[#735A51] mb-6 line-clamp-3 flex-grow">
                     {noticia.resumo}
                   </p>
                   
                   <a 
                     href={`/noticias/${noticia.slug}`} 
-                    className="inline-flex items-center gap-2 text-[#592C1C] font-bold hover:text-[#401D10] transition-colors mt-auto"
+                    className="inline-flex items-center gap-2 text-[#592C1C] font-noticiatextbold hover:text-[#401D10] transition-colors mt-auto"
                   >
                     Ler matéria completa
                     <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>

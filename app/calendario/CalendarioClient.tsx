@@ -122,10 +122,10 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
         
         {/* TÍTULO DA PÁGINA */}
         <div className="text-center px-6 mb-8 md:mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif text-[#401D10] tracking-tight mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold font-merriweather text-[#401D10] tracking-tight mb-3">
             Calendário Paroquial
           </h1>
-          <p className="text-sm md:text-lg text-[#735A51] max-w-xl mx-auto">
+          <p className="font-noticiatexrregular text-sm md:text-lg text-[#735A51] max-w-xl mx-auto">
             Acompanhe os horários de missas, formações, eventos e reuniões de toda a paróquia.
           </p>
         </div>
@@ -133,13 +133,13 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
         {/* FILTROS */}
         <div className="px-6 pt-2 pb-6">
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide items-center justify-center md:justify-start">
-            <button onClick={() => setAbaAtiva('hoje')} className={`px-5 py-2 rounded-full font-medium transition-colors whitespace-nowrap text-sm ${abaAtiva === 'hoje' ? 'bg-[#401D10] text-[#F2F2F2] shadow-sm' : 'bg-[#A6948D]/20 text-[#735A51] hover:bg-[#A6948D]/30'}`}>
+            <button onClick={() => setAbaAtiva('hoje')} className={`px-5 py-2 rounded-full font-breeSerif font-medium transition-colors whitespace-nowrap text-sm ${abaAtiva === 'hoje' ? 'bg-[#401D10] text-[#F2F2F2] shadow-sm' : 'bg-[#A6948D]/20 text-[#735A51] hover:bg-[#A6948D]/30'}`}>
               Hoje
             </button>
-            <button onClick={() => setAbaAtiva('amanha')} className={`px-5 py-2 rounded-full font-medium transition-colors whitespace-nowrap text-sm ${abaAtiva === 'amanha' ? 'bg-[#401D10] text-[#F2F2F2] shadow-sm' : 'bg-[#A6948D]/20 text-[#735A51] hover:bg-[#A6948D]/30'}`}>
+            <button onClick={() => setAbaAtiva('amanha')} className={`px-5 py-2 rounded-full font-breeSerif font-medium transition-colors whitespace-nowrap text-sm ${abaAtiva === 'amanha' ? 'bg-[#401D10] text-[#F2F2F2] shadow-sm' : 'bg-[#A6948D]/20 text-[#735A51] hover:bg-[#A6948D]/30'}`}>
               Amanhã
             </button>
-            <button onClick={() => setAbaAtiva('mes')} className={`px-5 py-2 rounded-full font-medium transition-colors whitespace-nowrap text-sm ${abaAtiva === 'mes' ? 'bg-[#401D10] text-[#F2F2F2] shadow-sm' : 'bg-[#A6948D]/20 text-[#735A51] hover:bg-[#A6948D]/30'}`}>
+            <button onClick={() => setAbaAtiva('mes')} className={`px-5 py-2 rounded-full font-breeSerif font-medium transition-colors whitespace-nowrap text-sm ${abaAtiva === 'mes' ? 'bg-[#401D10] text-[#F2F2F2] shadow-sm' : 'bg-[#A6948D]/20 text-[#735A51] hover:bg-[#A6948D]/30'}`}>
               Mensal
             </button>
 
@@ -163,7 +163,7 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                 {format(subMonths(mesAtual, 1), 'MMM', { locale: ptBR }).toUpperCase()}
               </button>
               
-              <span className="text-lg font-bold text-[#401D10] capitalize px-4 border-x border-[#A6948D]/30">
+              <span className="text-lg font-breeSerif font-bold text-[#401D10] capitalize px-4 border-x border-[#A6948D]/30">
                 {format(mesAtual, 'MMMM', { locale: ptBR })}
               </span>
 
@@ -178,7 +178,7 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
         <div className="px-6">
           {eventosFiltrados.length === 0 ? (
             <div className="text-center py-12 mt-4 bg-white/50 rounded-3xl border border-dashed border-[#A6948D]">
-              <p className="text-[#735A51] font-medium">Nenhum evento programado para este período.</p>
+              <p className="text-[#735A51]  font-m font-medium">Nenhum evento programado para este período.</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -187,10 +187,10 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
               {(abaAtiva === 'hoje' || abaAtiva === 'amanha' || abaAtiva === 'data') && (
                 <div className="space-y-4">
                   <div className="mb-8 md:mb-10 pl-2 text-center md:text-left">
-                    <h3 className="text-lg md:text-xl font-medium text-[#735A51] capitalize">
+                    <h3 className="text-lg md:text-xl font-merriweather font-medium text-[#735A51] capitalize">
                       {format(dataCabecalho, 'EEEE', { locale: ptBR })}
                     </h3>
-                    <p className="text-4xl md:text-5xl font-bold text-[#401D10] tracking-tight">
+                    <p className="text-4xl md:text-5xl font-merriweather font-bold text-[#401D10] tracking-tight">
                       {format(dataCabecalho, 'dd MMM', { locale: ptBR }).toUpperCase()}
                     </p>
                   </div>
@@ -200,18 +200,18 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                       const cores = obterCores(evento.tipo);
                       return (
                         <div key={evento._id} className={`${cores.bgCard} ${cores.textCard} p-6 rounded-3xl shadow-md relative overflow-hidden transition-transform hover:-translate-y-1 duration-300`}>
-                          <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
+                          <span className={`text-[10px] font-breeSerif font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
                             {evento.tipo}
                           </span>
                           
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-xl md:text-2xl font-serif font-medium pr-4 leading-tight">{evento.titulo}</h4>
-                            <span className={`${cores.textHora} font-light text-2xl md:text-3xl tracking-tight`}>
+                            <h4 className="text-xl md:text-2xl font-merriweather font-medium pr-4 leading-tight">{evento.titulo}</h4>
+                            <span className={`${cores.textHora} font-merriweather font-bold text-2xl md:text-3xl tracking-tight`}>
                               {format(new Date(evento.dataInicio), 'HH:mm')}
                             </span>
                           </div>
                           
-                          <div className="space-y-1.5 text-sm md:text-base mt-6 opacity-90">
+                          <div className="font-noticiatexrregular space-y-1.5 text-sm md:text-base mt-6">
                             <p className="flex items-center gap-2">📍 {evento.local}</p>
                             {evento.freiCelebrante && (
                               <p className="flex items-center gap-2">✝ {evento.freiCelebrante}</p>
@@ -229,7 +229,7 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                 <div className="space-y-8 md:space-y-12">
                   {Object.entries(eventosAgrupadosPorDia).map(([dia, eventosDoDia]) => (
                     <div key={dia}>
-                      <h3 className="text-sm md:text-base font-bold text-[#735A51] capitalize mb-4 tracking-wider border-b border-[#A6948D]/30 pb-2">
+                      <h3 className="text-sm md:text-base font-merriweather font-bold text-[#735A51] capitalize mb-4 tracking-wider border-b border-[#A6948D]/30 pb-2">
                         {dia}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -240,20 +240,20 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                           return (
                             <div key={evento._id} className={`${cores.bgCard} ${cores.textCard} p-5 rounded-2xl shadow-sm flex justify-between items-center transition-transform hover:shadow-md duration-300 hover:-translate-y-0.5`}>
                               <div>
-                                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md mb-2 inline-block ${cores.badge}`}>
+                                <span className={`text-[10px] font-breeSerif font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
                                   {evento.tipo}
                                 </span>
-                                <h4 className="font-serif text-lg md:text-xl leading-tight">{evento.titulo}</h4>
-                                <p className={`text-xs md:text-sm mt-1.5 opacity-80`}>{evento.local}</p>
+                                <h4 className=" font-merriweather text-lg md:text-xl leading-tight">{evento.titulo}</h4>
+                                <p className={`font-noticiatexrregular text-xs md:text-sm mt-1.5 opacity-80`}>{evento.local}</p>
                                 
                                 {isMissa && evento.freiCelebrante && (
-                                  <p className="text-xs md:text-sm mt-1 opacity-80 flex items-center gap-1.5">
+                                  <p className="font-noticiatexrregular text-xs md:text-sm mt-1 opacity-80 flex items-center gap-1.5">
                                     ✝ {evento.freiCelebrante}
                                   </p>
                                 )}
                               </div>
                               <div className="text-right pl-4">
-                                <span className={`${cores.textHora} text-xl md:text-2xl font-light tracking-tight`}>
+                                <span className={`${cores.textHora} text-xl md:text-2xl font-merriweather font-bold tracking-tight`}>
                                   {format(new Date(evento.dataInicio), 'HH:mm')}
                                 </span>
                               </div>

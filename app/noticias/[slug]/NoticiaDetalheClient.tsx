@@ -92,7 +92,7 @@ export default function NoticiaDetalheClient({ noticia }: { noticia: Noticia }) 
 
         {/* Link de voltar no Desktop */}
         <div className="hidden md:block mb-8">
-          <a href="/noticias" className="text-[#735A51] hover:text-[#401D10] transition-colors font-medium inline-flex items-center gap-2 group w-fit">
+          <a href="/noticias" className="font-breeSerif text-[#735A51] hover:text-[#401D10] transition-colors font-medium inline-flex items-center gap-2 group w-fit">
             <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -101,12 +101,12 @@ export default function NoticiaDetalheClient({ noticia }: { noticia: Noticia }) 
         </div>
 
         {/* Data de Publicação */}
-        <time className="text-[#A6948D] font-bold text-sm uppercase tracking-widest mb-3 block">
+        <time className="text-[#A6948D] font-breeSerif font-bold text-sm uppercase tracking-widest mb-3 block">
           {format(new Date(noticia.dataPublicacao), "dd 'de' MMMM, yyyy", { locale: ptBR })}
         </time>
         
         {/* Título Principal */}
-        <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#401D10] leading-tight mb-8">
+        <h1 className="text-3xl md:text-5xl font-merriweather font-bold text-[#401D10] leading-tight mb-8">
           {noticia.titulo}
         </h1>
 
@@ -130,7 +130,7 @@ export default function NoticiaDetalheClient({ noticia }: { noticia: Noticia }) 
         )}
 
         {/* Corpo do Texto */}
-        <div className="text-[#735A51] text-lg leading-relaxed space-y-6 font-serif mb-12">
+        <div className="font-noticiatexrregular text-[#735A51] text-lg leading-relaxed space-y-6 font-serif mb-12">
           <p className="whitespace-pre-wrap">{noticia.resumo}</p> 
         </div>
 
@@ -139,7 +139,7 @@ export default function NoticiaDetalheClient({ noticia }: { noticia: Noticia }) 
         ========================================= */}
         {videoId && (
           <div className="mb-12">
-            <h3 className="text-2xl font-serif font-bold text-[#401D10] mb-6 flex items-center gap-2">
+            <h3 className="text-2xl font-merriweather font-bold text-[#401D10] mb-6 flex items-center gap-2">
               <svg className="w-6 h-6 text-[#A6948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               Vídeo
             </h3>
@@ -161,7 +161,7 @@ export default function NoticiaDetalheClient({ noticia }: { noticia: Noticia }) 
         ========================================= */}
         {noticia.galeriaUrls && noticia.galeriaUrls.length > 0 && (
           <div className="mb-12">
-            <h3 className="text-2xl font-serif font-bold text-[#401D10] mb-6 flex items-center gap-2">
+            <h3 className="text-2xl font-merriweather font-bold text-[#401D10] mb-6 flex items-center gap-2">
               <svg className="w-6 h-6 text-[#A6948D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
               Galeria de Fotos
             </h3>
