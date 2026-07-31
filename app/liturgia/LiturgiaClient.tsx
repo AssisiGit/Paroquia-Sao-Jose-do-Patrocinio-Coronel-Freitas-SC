@@ -58,8 +58,30 @@ const formatarTextoBiblico = (
     return `\n${num} `;
   });
 
-  // 3. O "DESGRUDADOR"
-  textoProcessado = textoProcessado.replace(/(\d{1,3}(?:[,.]\s*\d{1,3})?[a-z]?)([a-zA-ZÀ-Ÿ])/g, "$1 $2");
+  // =========================================
+  // 3. O "DESGRUDADOR" (Alfabeto Completo A-Z)
+  // =========================================
+  
+  // 3.1 Número (+ qualquer letra a-z opcional) grudado com Maiúscula
+  // Ex: "12E" -> "12 E", "12aE" -> "12a E", "12zE" -> "12z E"
+  textoProcessado = textoProcessado.replace(/(\d{1,3}[a-z]?)([A-ZÀ-Ÿ])/g, "$1 $2");
+  
+  // 3.2 Artigos/Conjunções (a, e, o, á, é, ó) sem espaço duplo 
+  // Ex: "5aescutar" -> "5 a escutar", "6éfalso" -> "6 é falso"
+  textoProcessado = textoProcessado.replace(/(\d{1,3})([aeoáéó])([a-zà-ÿ]{2,})/g, "$1 $2 $3");
+
+  // 3.3 Preposição/Artigo com espaço APENAS depois 
+  // Ex: "5a escutar" -> "5 a escutar"
+  textoProcessado = textoProcessado.replace(/(\d{1,3})([aeoáéó])\s+(?=[a-zà-ÿ])/g, "$1 $2 ");
+  
+  // 3.4 Número grudado em qualquer palavra minúscula de 2+ letras 
+  // Ex: "6fará" -> "6 fará", "12jesus" -> "12 jesus"
+  textoProcessado = textoProcessado.replace(/(\d{1,3})([a-zà-ÿ]{2,})/g, "$1 $2");
+  
+  // 3.5 Marcador de versículo (qualquer letra a-z) grudado na próxima palavra 
+  // Ex: "12fele" -> "12f ele" (fallback)
+  textoProcessado = textoProcessado.replace(/(\d{1,3}[a-z])([a-zà-ÿ])/g, "$1 $2");
+  // =========================================
 
   // 4. LIMPEZA AVANÇADA (BASEADA NA REFERÊNCIA)
   if (primeiroVersiculoDaReferencia) {
@@ -89,7 +111,6 @@ const formatarTextoBiblico = (
   let jaAchouPrimeiroVersiculo = false;
 
   linhas.forEach(linha => {
-    // Evita repetir o refrão no meio do texto do salmo
     if (isSalmo && refrao) {
       const linhaSemIndicador = linha.replace(/^(—\s*)?(R\.|R\/|℟)\s*/i, '');
       const refraoLimpo = refrao.replace(/[.,!?;\s]/g, '').toLowerCase();
@@ -125,7 +146,6 @@ const formatarTextoBiblico = (
       if (blocoAtual) {
         blocoAtual.linhas.push(linha);
       } else {
-        // INJEÇÃO FINAL
         if (!jaAchouPrimeiroVersiculo && !isSalmo && primeiroVersiculoDaReferencia) {
           blocoAtual = { type: 'versiculo', numero: primeiroVersiculoDaReferencia, linhas: [linha] };
           jaAchouPrimeiroVersiculo = true;
@@ -143,7 +163,6 @@ const formatarTextoBiblico = (
   return (
     <div className="space-y-3 md:space-y-4 mt-4">
       
-      {/* REFRÃO NO TOPO */}
       {isSalmo && refrao && (
         <div className="flex flex-row gap-3 md:gap-5 items-start w-full mb-6">
           <div className={`text-[#E53E3E] font-serif text-2xl md:text-3xl ${colunaEsquerdaClasses} leading-none pt-0.5 md:pt-1`}>
@@ -155,12 +174,11 @@ const formatarTextoBiblico = (
         </div>
       )}
 
-      {/* VERSÍCULOS E ESTROFES */}
       {blocos.map((bloco, index) => {
         if (bloco.type === 'versiculo') {
           return (
             <div key={index} className="flex flex-row gap-3 md:gap-5 items-start w-full">
-              <div className={`text-[#E53E3E] font-bold text-sm md:text-base mt-1 md:mt-1.5 ${colunaEsquerdaClasses} whitespace-nowrap`}>
+              <div className={`text-[#E53E3E] font-noticiatexrregular font-bold text-sm md:text-base mt-1 md:mt-1.5 ${colunaEsquerdaClasses} whitespace-nowrap`}>
                 {bloco.numero}
               </div>
               <div className={`flex-1 flex flex-col gap-1 md:gap-1.5 ${textClasses}`}>
@@ -238,26 +256,20 @@ export default function LiturgiaClient({
     }
   };
 
-  // =========================================
-  // MATRIZ DO CALENDÁRIO (CORREÇÃO DO ERRO)
-  // =========================================
   const primeiroDiaDoMes = new Date(mesVisualizado.getFullYear(), mesVisualizado.getMonth(), 1);
-  const diaDaSemanaPrimeiroDia = primeiroDiaDoMes.getDay(); // 0 = Dom, 1 = Seg...
+  const diaDaSemanaPrimeiroDia = primeiroDiaDoMes.getDay(); 
   const ultimoDiaDoMes = new Date(mesVisualizado.getFullYear(), mesVisualizado.getMonth() + 1, 0);
   const totalDiasNoMes = ultimoDiaDoMes.getDate();
 
   const diasMatriz: (Date | null)[] = [];
   
-  // Preenche os espaços vazios do início do mês
   for (let i = 0; i < diaDaSemanaPrimeiroDia; i++) {
     diasMatriz.push(null);
   }
   
-  // Preenche os dias reais
   for (let i = 1; i <= totalDiasNoMes; i++) {
     diasMatriz.push(new Date(mesVisualizado.getFullYear(), mesVisualizado.getMonth(), i));
   }
-  // =========================================
 
   const indice = [];
   if (liturgia) {
@@ -357,26 +369,26 @@ export default function LiturgiaClient({
             {liturgia ? (
               <>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[22px] font-black text-[#401D10] leading-none tracking-tight">
+                  <span className="text-[22px] font-breeSerif font-bold text-[#401D10] leading-none tracking-tight">
                     {diaNumTopo} {mesTopo}
                   </span>
                   <div className={`w-2.5 h-2.5 rounded-full ${corHexTopo} shadow-sm ml-1`}></div>
-                  <span className="text-xs font-bold text-[#592C1C] uppercase tracking-widest leading-none pt-0.5">
+                  <span className="text-xs font-breeSerif font-bold text-[#592C1C] uppercase tracking-widest leading-none pt-0.5">
                     {liturgia.cor}
                   </span>
                 </div>
-                <h1 className="text-2xl font-serif font-bold text-[#401D10] leading-tight line-clamp-2">
+                <h1 className="text-2xl font-merriweather font-bold text-[#401D10] leading-tight line-clamp-2">
                   {liturgia.liturgia}
                 </h1>
               </>
             ) : (
-              <h1 className="text-2xl font-serif font-bold text-[#401D10]">Buscando Liturgia...</h1>
+              <h1 className="text-2xl font-merriweather font-bold text-[#401D10]">Buscando Liturgia...</h1>
             )}
           </div>
 
           <div className="flex items-center gap-2 shrink-0 pt-1">
             {dataSelecionada && (
-              <button onClick={() => router.push('/liturgia')} className="text-xs font-bold uppercase tracking-widest text-[#592C1C] bg-[#A6948D]/10 px-3 py-2 rounded-xl active:scale-95 transition-transform">
+              <button onClick={() => router.push('/liturgia')} className="text-xs font-breeSerif font-bold uppercase tracking-widest text-[#592C1C] bg-[#A6948D]/10 px-3 py-2 rounded-xl active:scale-95 transition-transform">
                 Hoje
               </button>
             )}
@@ -392,31 +404,31 @@ export default function LiturgiaClient({
             {liturgia && (
               <div className="flex items-end gap-8">
                 <div className="flex flex-col items-start text-left">
-                  <span className="text-lg font-medium text-[#735A51] capitalize mb-1 leading-none">
+                  <span className="text-lg font-breeSerif font-bold text-[#735A51] capitalize mb-1 leading-none">
                     {diaDaSemanaTopo}
                   </span>
-                  <span className="text-[48px] font-black text-[#401D10] leading-none tracking-tighter uppercase">
+                  <span className="text-[48px] font-merriweather font-bold text-[#401D10] leading-none tracking-tighter uppercase">
                     {diaNumTopo} {mesTopo}
                   </span>
                 </div>
                 <div className="w-px h-8 bg-[#A6948D]/30"></div>
                 <div className="flex items-center gap-2.5 pb-2">
                   <div className={`w-5 h-5 rounded-full ${corHexTopo} shadow-sm`}></div>
-                  <span className="text-sm font-bold text-[#592C1C] uppercase tracking-wider">
+                  <span className="text-sm font-breeSerif font-bold text-[#592C1C] uppercase tracking-wider">
                     {liturgia.cor}
                   </span>
                 </div>
               </div>
             )}
           </div>
-          <h1 className="text-5xl font-serif font-bold text-[#401D10] leading-tight max-w-3xl mx-auto">
+          <h1 className="text-5xl font-merriweather font-bold text-[#401D10] leading-tight max-w-3xl mx-auto">
             {liturgia ? liturgia.liturgia : 'Buscando Liturgia...'}
           </h1>
         </div>
 
         {!liturgia ? (
           <div className="text-center py-20 bg-white/50 rounded-3xl border border-dashed border-[#A6948D] mt-10">
-            <p className="text-[#735A51] font-medium text-lg animate-pulse">Carregando a liturgia da data selecionada...</p>
+            <p className="text-[#735A51] font-breeSerif text-lg animate-pulse">Carregando a liturgia da data selecionada...</p>
           </div>
         ) : (
           <>
@@ -426,7 +438,7 @@ export default function LiturgiaClient({
                 <button 
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="px-5 py-2 bg-[#A6948D]/20 text-[#592C1C] rounded-full text-sm font-bold whitespace-nowrap active:scale-95 transition-transform"
+                  className="px-5 py-2 bg-[#A6948D]/20 text-[#592C1C] rounded-full text-sm font-noticiatexrregular font-bold whitespace-nowrap active:scale-95 transition-transform"
                 >
                   {item.label}
                 </button>
