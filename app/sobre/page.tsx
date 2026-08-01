@@ -14,6 +14,11 @@ async function getDadosSobre() {
       telefone,
       whatsapp,
       endereco,
+      linhaDoTempo[] {
+        ano,
+        texto,
+        "imagemUrl": imagem.asset->url
+      },
       fraternidade[] {
         nome,
         funcao,

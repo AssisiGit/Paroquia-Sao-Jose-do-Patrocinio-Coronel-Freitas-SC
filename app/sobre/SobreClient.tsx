@@ -10,10 +10,17 @@ interface Frade {
   historia?: string;
 }
 
+// =========================================
+// INTERFACE ATUALIZADA
+// =========================================
 interface DadosSobre {
   titulo?: string;
   imagemUrl?: string;
-  historia?: string;
+  linhaDoTempo?: {
+    ano: string;
+    texto: string;
+    imagemUrl?: string;
+  }[];
   fraternidade?: Frade[];
   horarioSecretaria?: string;
   telefone?: string;
@@ -101,16 +108,63 @@ export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
         )}
 
         {/* =========================================
-            SESSÃO: HISTÓRIA DA PARÓQUIA (Centralizada)
+            SEÇÃO: LINHA DO TEMPO (HISTÓRIA)
         ========================================= */}
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-serif font-bold text-[#401D10] mb-8 text-center">Nossa História</h2>
-          <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-sm border border-[#A6948D]/20">
-            <div className="text-[#735A51] text-lg leading-relaxed font-serif whitespace-pre-wrap">
-              {dados?.historia ? dados.historia : 'História ainda não cadastrada.'}
+        {dados?.linhaDoTempo && dados.linhaDoTempo.length > 0 && (
+          <section className="py-16 md:py-24 bg-[#F2F2F2] rounded-[3rem] border border-[#A6948D]/10">
+            <div className="max-w-6xl mx-auto px-6">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#401D10] mb-4">Nossa História</h2>
+                <p className="text-[#735A51] text-lg max-w-2xl mx-auto">
+                  Conheça os marcos que construíram a Paróquia São José do Patrocínio.
+                </p>
+              </div>
+
+              {/* CONTAINER DA LINHA DO TEMPO */}
+              <div className="relative mx-auto max-w-5xl px-4 md:px-0 mt-10">
+                
+                {/* A LINHA CENTRAL: Agora com o translate-x-1/2 garantindo que fica perfeitamente no centro */}
+                <div className="absolute left-[30px] md:left-1/2 top-0 bottom-0 border-l-[3px] border-dashed border-[#A6948D]/60 -translate-x-1/2"></div>
+
+                {dados.linhaDoTempo.map((item, index) => {
+                  const isPar = index % 2 === 0;
+
+                  return (
+                    <div key={index} className={`flex w-full mb-16 md:mb-24 ${isPar ? 'md:justify-start' : 'md:justify-end'} justify-end relative`}>
+                      
+                      {/* 🔴 CORREÇÃO DO BUG: A bolinha agora fica presa à LINHA, e não à caixa de texto */}
+                      <div className="absolute left-[30px] md:left-1/2 top-3 w-6 h-6 -translate-x-1/2 rounded-full bg-[#592C1C] border-[4px] border-[#F2F2F2] shadow-sm z-10"></div>
+
+                      {/* O CONTEÚDO (Texto + Imagem) */}
+                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-4rem)] relative text-left">
+
+                        {/* ANO E TEXTO */}
+                        <h3 className="text-5xl md:text-6xl font-black font-serif text-[#401D10] tracking-tighter leading-none mb-3">
+                          {item.ano}
+                        </h3>
+                        <p className="text-[#735A51] text-lg md:text-xl leading-relaxed">
+                          {item.texto}
+                        </p>
+
+                        {/* IMAGEM RETANGULAR */}
+                        {item.imagemUrl && (
+                          <div className={`mt-6 rounded-2xl overflow-hidden shadow-lg border-2 border-[#A6948D]/20 
+                            ${isPar ? 'md:ml-auto' : 'md:mr-auto'} max-w-md w-full`}>
+                            <img 
+                              src={item.imagemUrl} 
+                              alt={`Acontecimento do ano ${item.ano}`} 
+                              className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" 
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </div>
+          </section>
+        )}
 
       </div>
 
