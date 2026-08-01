@@ -452,11 +452,11 @@ export default function LiturgiaClient({
                 <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#A6948D]/20">
                   <div className="flex items-center gap-2 text-[#592C1C] mb-6">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>
-                    <h4 className="font-serif font-bold text-lg text-[#401D10]">Navegação</h4>
+                    <h4 className="font-breeSerif font-bold text-lg text-[#401D10]">Navegação</h4>
                   </div>
                   <nav className="flex flex-col gap-4 border-l-2 border-[#A6948D]/20 pl-4">
                     {indice.map((item) => (
-                      <button key={item.id} onClick={() => scrollToSection(item.id)} className="text-left text-[#735A51] hover:text-[#592C1C] font-medium text-sm transition-all hover:translate-x-1 focus:outline-none">
+                      <button key={item.id} onClick={() => scrollToSection(item.id)} className="text-left text-[#735A51] hover:text-[#592C1C] font-breeSerif text-sm transition-all hover:translate-x-1 focus:outline-none">
                         {item.label}
                       </button>
                     ))}
@@ -470,14 +470,14 @@ export default function LiturgiaClient({
                 {/* PRIMEIRA LEITURA */}
                 <section id="primeira-leitura" className="p-8 md:p-12 border-b border-[#A6948D]/20 scroll-mt-6">
                   <div className="mb-4">
-                    <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Primeira Leitura</h2>
+                    <h2 className="text-xs md:text-sm font-breeSerif text-[#A6948D] uppercase tracking-widest mb-2">Primeira Leitura</h2>
                     <div className="flex flex-col gap-1">
                       {liturgia.primeiraLeitura?.titulo && (
-                        <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                        <h3 className="text-xl md:text-2xl font-merriweather font-bold text-[#401D10]">
                           {liturgia.primeiraLeitura.titulo}
                         </h3>
                       )}
-                      <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                      <span className="text-lg md:text-xl font-breeSerif font-bold text-[#A6948D]">
                         {expandirLivroBiblico(liturgia.primeiraLeitura?.referencia)}
                       </span>
                     </div>
@@ -488,14 +488,14 @@ export default function LiturgiaClient({
                 {/* SALMO RESPONSORIAL */}
                 <section id="salmo" className="p-8 md:p-12 border-b border-[#A6948D]/20 bg-[#A6948D]/5 scroll-mt-6">
                   <div className="mb-4">
-                    <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Salmo Responsorial</h2>
+                    <h2 className="text-xs md:text-sm font-breeSerif font-bold text-[#A6948D] uppercase tracking-widest mb-2">Salmo Responsorial</h2>
                     <div className="flex flex-col gap-1">
                       {liturgia.salmo?.refrao && (
-                        <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                        <h3 className="text-xl md:text-2xl font-merriweather font-bold text-[#401D10]">
                           {liturgia.salmo.refrao}
                         </h3>
                       )}
-                      <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                      <span className="text-lg md:text-xl font-breeSerif font-bold text-[#A6948D]">
                         {expandirLivroBiblico(liturgia.salmo?.referencia)}
                       </span>
                     </div>
@@ -507,14 +507,14 @@ export default function LiturgiaClient({
                 {liturgia.segundaLeitura && typeof liturgia.segundaLeitura !== 'string' && (
                   <section id="segunda-leitura" className="p-8 md:p-12 border-b border-[#A6948D]/20 scroll-mt-6">
                     <div className="mb-4">
-                      <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Segunda Leitura</h2>
+                      <h2 className="text-xs md:text-sm font-breeSerif text-[#A6948D] uppercase tracking-widest mb-2">Segunda Leitura</h2>
                       <div className="flex flex-col gap-1">
                         {(liturgia.segundaLeitura as Leitura).titulo && (
-                          <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                          <h3 className="text-xl md:text-2xl font-merriweather font-bold text-[#401D10]">
                             {(liturgia.segundaLeitura as Leitura).titulo}
                           </h3>
                         )}
-                        <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                        <span className="text-lg md:text-xl font-breeSerif font-bold text-[#A6948D]">
                           {expandirLivroBiblico((liturgia.segundaLeitura as Leitura).referencia)}
                         </span>
                       </div>
@@ -526,14 +526,14 @@ export default function LiturgiaClient({
                 {/* EVANGELHO */}
                 <section id="evangelho" className="p-8 md:p-12 scroll-mt-6">
                   <div className="mb-4">
-                    <h2 className="text-xs md:text-sm font-bold text-[#A6948D] uppercase tracking-widest mb-2">Evangelho</h2>
+                    <h2 className="text-xs md:text-sm font-breeSerif text-[#A6948D] uppercase tracking-widest mb-2">Evangelho</h2>
                     <div className="flex flex-col gap-1">
                       {liturgia.evangelho?.titulo && (
-                        <h3 className="text-xl md:text-2xl font-serif font-bold text-[#401D10]">
+                        <h3 className="text-xl md:text-2xl font-merriweather font-bold text-[#401D10]">
                           {liturgia.evangelho.titulo}
                         </h3>
                       )}
-                      <span className="text-lg md:text-xl font-bold text-[#A6948D]">
+                      <span className="text-lg md:text-xl font-breeSerif font-bold text-[#A6948D]">
                         {expandirLivroBiblico(liturgia.evangelho?.referencia)}
                       </span>
                     </div>
@@ -551,10 +551,10 @@ export default function LiturgiaClient({
                     <svg className="absolute -right-4 -top-4 w-32 h-32 text-[#A6948D] opacity-10 transform rotate-12" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
                     <div className="flex items-center gap-3 mb-8 relative z-10">
                       <svg className="w-6 h-6 text-[#592C1C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                      <h2 className="text-2xl font-serif font-bold text-[#401D10]">Reflexão da Fraternidade</h2>
+                      <h2 className="text-2xl font-merriweather font-bold text-[#401D10]">Reflexão da Fraternidade</h2>
                     </div>
-                    <div className="text-[#401D10] text-lg md:text-xl leading-relaxed md:leading-loose font-serif whitespace-pre-wrap italic relative z-10">"{reflexao.texto}"</div>
-                    {reflexao.autor && <div className="mt-8 text-right font-bold text-[#592C1C] uppercase tracking-wider text-sm relative z-10">— {reflexao.autor}</div>}
+                    <div className="text-[#401D10] text-lg md:text-xl leading-relaxed md:leading-loose font-noticiatexrregular whitespace-pre-wrap italic relative z-10">"{reflexao.texto}"</div>
+                    {reflexao.autor && <div className="mt-8 text-left font-ebgaramond font-bold text-[#592C1C] uppercase tracking-wider text-sm relative z-10">— {reflexao.autor}</div>}
                   </section>
                 )}
               </div>
@@ -565,11 +565,11 @@ export default function LiturgiaClient({
                   <div className="flex items-center justify-between mb-4 border-b border-[#A6948D]/20 pb-4">
                     <div className="flex items-center gap-2 text-[#592C1C]">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                      <h4 className="font-serif font-bold text-lg text-[#401D10]">Datas</h4>
+                      <h4 className="font-breeSerif font-bold text-lg text-[#401D10]">Datas</h4>
                     </div>
                     <div className="flex items-center gap-2">
                       {dataSelecionada && (
-                        <button onClick={() => router.push('/liturgia')} className="text-[11px] font-bold uppercase tracking-widest text-[#592C1C] bg-[#A6948D]/10 hover:bg-[#A6948D]/20 px-2.5 py-1.5 rounded-lg transition-colors">
+                        <button onClick={() => router.push('/liturgia')} className="text-[11px] font-breeSerif font-bold uppercase tracking-widest text-[#592C1C] bg-[#A6948D]/10 hover:bg-[#A6948D]/20 px-2.5 py-1.5 rounded-lg transition-colors">
                           Hoje
                         </button>
                       )}
@@ -596,16 +596,16 @@ export default function LiturgiaClient({
                           }`}
                         >
                           <div className="flex flex-col items-center justify-start min-w-[2rem] pt-1">
-                            <span className={`text-[22px] font-bold leading-none ${ehSelecionado ? 'text-[#401D10]' : 'text-[#735A51]'}`}>
+                            <span className={`text-[22px] font-breeSerif font-bold leading-none ${ehSelecionado ? 'text-[#401D10]' : 'text-[#735A51]'}`}>
                               {diaNum}
                             </span>
                             <div className={`w-[12px] h-[12px] rounded-full mt-2 ${corBolinha}`}></div>
                           </div>
                           <div className="flex flex-col flex-1 pt-0.5">
-                            <span className={`text-[15px] ${ehSelecionado ? 'text-[#401D10] font-semibold' : 'text-[#735A51] group-hover:text-[#401D10]'}`}>
+                            <span className={`text-[15px] ${ehSelecionado ? 'text-[#401D10] font-breeSerif' : 'text-[#735A51] group-hover:text-[#401D10]'}`}>
                               {linha1}
                             </span>
-                            <span className="text-[14px] text-[#A6948D] leading-tight mt-1 pr-1">
+                            <span className="text-[14px] text-[#A6948D] font-breeSerif leading-tight mt-1 pr-1">
                               {linha2}
                             </span>
                           </div>
