@@ -49,7 +49,7 @@ export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
 
         {/* TÍTULO DESKTOP */}
         <div className="hidden md:block mb-12 text-center">
-          <h1 className="text-5xl font-bold font-serif text-[#401D10] tracking-tight mb-4">{dados?.titulo || 'Sobre a Paróquia'}</h1>
+          <h1 className="text-5xl font-bold font-merriweather text-[#401D10] tracking-tight mb-4">{dados?.titulo || 'Sobre a Paróquia'}</h1>
         </div>
 
         {/* IMAGEM DA MATRIZ */}
@@ -63,13 +63,13 @@ export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
             SESSÃO: FRATERNIDADE (O GRID DE FOTOS)
         ========================================= */}
         {dados?.fraternidade && dados.fraternidade.length > 0 && (
-          <div className="mb-20">
+          <div className="mb-20">f
             <div className="mb-10 text-center md:text-left">
               <span className="flex items-center justify-center md:justify-start gap-2 text-[#A6948D] font-bold tracking-widest uppercase text-sm mb-2">
                 <span className="w-2 h-2 rounded-full bg-[#592C1C]"></span>
                 Nossos Frades
               </span>
-              <h2 className="text-4xl font-serif font-bold text-[#401D10]">Conheça a Fraternidade</h2>
+              <h2 className="text-4xl font-breeSerif font-bold text-[#401D10]">Conheça a Fraternidade</h2>
               <p className="text-[#735A51] mt-3 text-lg">Os frades que guiam e animam a vida pastoral da nossa paróquia.</p>
             </div>
 
@@ -93,7 +93,7 @@ export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
                   {/* Card Branco Flutuante (estilo da imagem) */}
                   <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm p-5 rounded-2xl flex justify-between items-center transform transition-transform duration-300 group-hover:-translate-y-1 shadow-lg">
                     <div>
-                      <h3 className="font-serif font-bold text-xl text-[#401D10]">{frade.nome}</h3>
+                      <h3 className="font-breeSerif font-bold text-xl text-[#401D10]">{frade.nome}</h3>
                       <p className="text-sm font-medium text-[#A6948D] uppercase tracking-wider mt-1">{frade.funcao}</p>
                     </div>
                     {/* Botão circular de "Ler Mais" estilo LinkedIn */}
@@ -114,7 +114,7 @@ export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
           <section className="py-16 md:py-24 bg-[#F2F2F2] rounded-[3rem] border border-[#A6948D]/10">
             <div className="max-w-6xl mx-auto px-6">
               <div className="text-center mb-16">
-                <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#401D10] mb-4">Nossa História</h2>
+                <h2 className="text-4xl md:text-5xl font-breeSerif font-bold text-[#401D10] mb-4">Nossa História</h2>
                 <p className="text-[#735A51] text-lg max-w-2xl mx-auto">
                   Conheça os marcos que construíram a Paróquia São José do Patrocínio.
                 </p>
@@ -139,7 +139,7 @@ export default function SobreClient({ dados }: { dados: DadosSobre | null }) {
                       <div className="w-[calc(100%-4rem)] md:w-[calc(50%-4rem)] relative text-left">
 
                         {/* ANO E TEXTO */}
-                        <h3 className="text-5xl md:text-6xl font-black font-serif text-[#401D10] tracking-tighter leading-none mb-3">
+                        <h3 className="text-5xl md:text-6xl font-black font-ebgaramond text-[#401D10] tracking-tighter leading-none mb-3">
                           {item.ano}
                         </h3>
                         <p className="text-[#735A51] text-lg md:text-xl leading-relaxed">
