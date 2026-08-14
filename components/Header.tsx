@@ -89,7 +89,7 @@ export default function Header() {
           </nav>
 
           <div className="w-64 flex justify-end">
-            <a href="https://paroquia-sao-jose-cel-freitas.sanity.studio/" className="text-sm font-sans font-medium text-[#A6948D] hover:text-[#735A51] transition-colors">Acesso Secretaria</a>
+            <a href="https://www.sanity.io/manage/project/6r6351cq" className="text-sm font-sans font-medium text-[#A6948D] hover:text-[#735A51] transition-colors">Acesso Secretaria</a>
           </div>
         </header>
 
@@ -181,7 +181,7 @@ export default function Header() {
               </div>
 
               <div className="pt-6 border-t border-[#A6948D]/30">
-                <a href="https://paroquia-sao-jose-cel-freitas.sanity.studio/" className="text-sm font-sans text-[#A6948D] hover:text-[#735A51] transition-colors flex items-center gap-2">
+                <a href="https://www.sanity.io/manage/project/6r6351cq" className="text-sm font-sans text-[#A6948D] hover:text-[#735A51] transition-colors flex items-center gap-2">
                   🔒 Acesso Secretaria
                 </a>
               </div>
