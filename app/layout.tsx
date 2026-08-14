@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Footer from '@/components/Footer'; 
 import Header from '@/components/Header'; 
+import { Analytics } from "@vercel/analytics/next";
 
 
 
@@ -52,6 +53,7 @@ export default function RootLayout({
         
         {/* O Footer ficará sempre no final, independente de qual página o usuário estiver */}
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
