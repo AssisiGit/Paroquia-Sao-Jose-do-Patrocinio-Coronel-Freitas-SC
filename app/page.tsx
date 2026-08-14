@@ -105,7 +105,7 @@ export default async function Home() {
                 className="w-full h-auto object-contain mx-auto scale-125 md:scale-150 transform transition-transform" 
               />
             </div>
-            [#401D10]
+            
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-merriweather font-bold text-[#401D10] leading-tight drop-shadow-2xl max-w-4xl tracking-wider">
                 Uma comunidade de fé, <br className="hidden md:block" />
