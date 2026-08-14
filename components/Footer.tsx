@@ -85,6 +85,7 @@ export default function Footer() {
               <li><a href="/noticias" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Notícias da Paróquia</a></li>
               <li><a href="/calendario" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Calendário e Horários</a></li>
               <li><a href="/comunidades" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Nossas Comunidades</a></li>
+              <li><a href="/sobre" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Sobre a Paróquia</a></li>
             </ul>
           </div>
 
@@ -96,7 +97,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li><a href="/liturgia" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Liturgia Diária</a></li>
               <li><a href="/velas" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Acender Vela Virtual</a></li>
-              <li><a href="/sobre" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Sobre a Paróquia</a></li>
+              <li><a href="/pastorais" className="text-[#A6948D] hover:text-[#F2F2F2] transition-colors font-medium hover:translate-x-1 inline-block">Pastorais e Movimentos</a></li>
             </ul>
           </div>
 
