@@ -235,16 +235,16 @@ export default async function Home() {
 
                 return (
                   <div key={evento._id} className={`snap-start shrink-0 w-[80vw] sm:w-[260px] md:w-[300px] ${cores.bgCard} ${cores.textCard} p-6 rounded-3xl shadow-md transition-transform hover:-translate-y-1 duration-300`}>
-                    <span className={`text-[10px] font-breeSerif uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
+                    <span className={`text-[12px] font-bold font-breeSerif uppercase tracking-widest px-3.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
                       {evento.tipo}
                     </span>
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-lg md:text-xl font-merriweather font-merriweather pr-2 md:pr-4 leading-tight">{evento.titulo}</h4>
+                      <h4 className="text-lg md:text-2xl font-merriweather font-merriweather pr-2 md:pr-4 leading-tight">{evento.titulo}</h4>
                       <span className={`${cores.textHora} font-merriweather font-bold text-xl md:text-2xl tracking-tight`}>
                         {formatarHorario(evento.dataInicio)}
                       </span>
                     </div>
-                    <div className="space-y-1 font-noticiatexrregular text-xs md:text-base mt-4">
+                    <div className="space-y-1 font-noticiatexrregular text-base md:text-lg mt-4">
                       <p className="flex items-center gap-2">📅 {rotuloDia}</p>
                       
                       {/* 👇 ADICIONADO AQUI: Regra para ocultar o emoji caso o local não exista */}

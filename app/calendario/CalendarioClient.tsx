@@ -212,7 +212,7 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                       const cores = obterCores(evento.tipo);
                       return (
                         <div key={evento._id} className={`${cores.bgCard} ${cores.textCard} p-6 rounded-3xl shadow-md relative overflow-hidden transition-transform hover:-translate-y-1 duration-300`}>
-                          <span className={`text-[10px] font-breeSerif font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
+                          <span className={`text-[12px] font-bold font-breeSerif uppercase tracking-widest px-3.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
                             {evento.tipo}
                           </span>
                           
@@ -224,7 +224,7 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                             </span>
                           </div>
                           
-                          <div className="font-noticiatexrregular space-y-1.5 text-sm md:text-base mt-6">
+                          <div className="font-noticiatexrregular space-y-1.5 text-base md:text-lg mt-6">
                             {/* 👇 ADICIONADO AQUI: Regra para ocultar o emoji caso o local não exista */}
                             {evento.local && (
                               <p className="flex items-center gap-2">📍 {evento.local}</p>
@@ -256,18 +256,18 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                           return (
                             <div key={evento._id} className={`${cores.bgCard} ${cores.textCard} p-5 rounded-2xl shadow-sm flex justify-between items-center transition-transform hover:shadow-md duration-300 hover:-translate-y-0.5`}>
                               <div>
-                                <span className={`text-[10px] font-breeSerif font-bold uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
+                                <span className={`text-[12px] font-bold font-breeSerif font-bold uppercase tracking-widest px-3.5 py-1 rounded-md mb-3 inline-block shadow-sm ${cores.badge}`}>
                                   {evento.tipo}
                                 </span>
                                 <h4 className=" font-merriweather text-lg md:text-xl leading-tight">{evento.titulo}</h4>
                                 
                                 {/* 👇 ADICIONADO AQUI: Regra para ocultar o emoji e texto caso o local não exista */}
                                 {evento.local && (
-                                  <p className={`font-noticiatexrregular text-xs md:text-sm mt-1.5 opacity-80 flex items-center gap-1`}>📍 {evento.local}</p>
+                                  <p className={`font-noticiatexrregular text-base md:text-lg mt-1.5 opacity-80 flex items-center gap-1`}>📍 {evento.local}</p>
                                 )}
                                 
                                 {isMissa && evento.freiCelebrante && (
-                                  <p className="font-noticiatexrregular text-xs md:text-sm mt-1 opacity-80 flex items-center gap-1.5">
+                                  <p className="font-noticiatexrregular text-base md:text-lg mt-1 opacity-80 flex items-center gap-1.5">
                                     ✝ {evento.freiCelebrante}
                                   </p>
                                 )}
