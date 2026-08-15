@@ -225,7 +225,10 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                           </div>
                           
                           <div className="font-noticiatexrregular space-y-1.5 text-sm md:text-base mt-6">
-                            <p className="flex items-center gap-2">📍 {evento.local}</p>
+                            {/* 👇 ADICIONADO AQUI: Regra para ocultar o emoji caso o local não exista */}
+                            {evento.local && (
+                              <p className="flex items-center gap-2">📍 {evento.local}</p>
+                            )}
                             {evento.freiCelebrante && (
                               <p className="flex items-center gap-2">✝ {evento.freiCelebrante}</p>
                             )}
@@ -257,7 +260,11 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                                   {evento.tipo}
                                 </span>
                                 <h4 className=" font-merriweather text-lg md:text-xl leading-tight">{evento.titulo}</h4>
-                                <p className={`font-noticiatexrregular text-xs md:text-sm mt-1.5 opacity-80`}>{evento.local}</p>
+                                
+                                {/* 👇 ADICIONADO AQUI: Regra para ocultar o emoji e texto caso o local não exista */}
+                                {evento.local && (
+                                  <p className={`font-noticiatexrregular text-xs md:text-sm mt-1.5 opacity-80 flex items-center gap-1`}>📍 {evento.local}</p>
+                                )}
                                 
                                 {isMissa && evento.freiCelebrante && (
                                   <p className="font-noticiatexrregular text-xs md:text-sm mt-1 opacity-80 flex items-center gap-1.5">

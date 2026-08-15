@@ -246,7 +246,12 @@ export default async function Home() {
                     </div>
                     <div className="space-y-1 font-noticiatexrregular text-xs md:text-base mt-4">
                       <p className="flex items-center gap-2">📅 {rotuloDia}</p>
-                      <p className="flex items-center gap-2">📍 {evento.local}</p>
+                      
+                      {/* 👇 ADICIONADO AQUI: Regra para ocultar o emoji caso o local não exista */}
+                      {evento.local && (
+                        <p className="flex items-center gap-2">📍 {evento.local}</p>
+                      )}
+
                       {isMissa && evento.freiCelebrante && (
                         <p className="flex items-center gap-2 mt-1">† {evento.freiCelebrante}</p>
                       )}
@@ -264,7 +269,7 @@ export default async function Home() {
           </div>
           
           <div className="mt-4 px-6 text-center sm:hidden">
-            <Link href="/calendario" className="inline-block px-6 py-3 bg-[#A6948D]/20 text-[#592C1C] font-breeSerif rounded-xl active:scale-95 transition-transform text-sm w-full">
+            <Link href="/calendario" className="inline-block px-6 py-3 bg-[#A6948D]/20 text-[#592C1C] font-ebgaramond rounded-xl active:scale-95 transition-transform text-sm w-full">
               Ver calendário completo
             </Link>
           </div>
