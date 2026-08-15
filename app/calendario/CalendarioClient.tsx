@@ -112,6 +112,18 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
     diasMatriz.push(new Date(anoVis, mesVis, i));
   }
 
+  // 👇 NOVA FUNÇÃO: Força o horário para o fuso do Brasil (São Paulo/Brasília)
+  const formatarHorario = (dataString: string) => {
+    if (!dataString) return '';
+    const data = new Date(dataString);
+    
+    return new Intl.DateTimeFormat('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Sao_Paulo'
+    }).format(data);
+  };
+
   return (
     <div className="relative min-h-screen pb-10 font-sans bg-[#F2F2F2] flex flex-col">
       
@@ -207,7 +219,8 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="text-xl md:text-2xl font-merriweather font-medium pr-4 leading-tight">{evento.titulo}</h4>
                             <span className={`${cores.textHora} font-merriweather font-bold text-2xl md:text-3xl tracking-tight`}>
-                              {format(new Date(evento.dataInicio), 'HH:mm')}
+                              {/* 👇 ALTERADO AQUI: Usando a nova função para formatar a hora */}
+                              {formatarHorario(evento.dataInicio)}
                             </span>
                           </div>
                           
@@ -254,7 +267,8 @@ export default function CalendarioClient({ eventosSanity }: { eventosSanity: any
                               </div>
                               <div className="text-right pl-4">
                                 <span className={`${cores.textHora} text-xl md:text-2xl font-merriweather font-bold tracking-tight`}>
-                                  {format(new Date(evento.dataInicio), 'HH:mm')}
+                                  {/* 👇 ALTERADO AQUI TAMBÉM: Usando a nova função para formatar a hora */}
+                                  {formatarHorario(evento.dataInicio)}
                                 </span>
                               </div>
                             </div>
