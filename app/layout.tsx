@@ -5,8 +5,6 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header'; 
 import { Analytics } from "@vercel/analytics/next";
 
-
-
 // 2. CONFIGURAR O ARQUIVO DA SUA FONTE (verifique se a extensão é .ttf ou .otf)
 const merriweather = localFont({
   src: './fonts/Merriweather-VariableFont_opsz,wdth,wght.ttf', // Caminho para a pasta que criamos
@@ -38,6 +36,16 @@ const breeSerif = localFont({
   display: 'swap',
 });
 
+// 👇 ADICIONADO AQUI: Bloco que avisa ao navegador qual é o ícone e o título do site
+export const metadata = {
+  title: 'Paróquia São José do Patrocínio',
+  description: 'Uma comunidade de fé, esperança e caridade.',
+  icons: {
+    icon: '/Tau2.png',
+    shortcut: '/Tau2.png',
+    apple: '/Tau2.png',
+  },
+};
 
 export default function RootLayout({
   children,
