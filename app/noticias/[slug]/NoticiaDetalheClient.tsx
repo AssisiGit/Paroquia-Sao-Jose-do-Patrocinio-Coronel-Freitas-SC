@@ -1,9 +1,9 @@
-// app/noticias/[slug]/NoticiaDetalheClient.tsx
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
+import { PortableText } from '@portabletext/react';
 
 interface Noticia {
   _id: string;
@@ -13,6 +13,7 @@ interface Noticia {
   imagemUrl?: string;
   videoUrl?: string;
   galeriaUrls?: string[];
+  conteudo?: any; // Para o conteúdo do Portable Text
 }
 
 export default function NoticiaDetalheClient({ noticia }: { noticia: Noticia }) {
@@ -129,9 +130,13 @@ export default function NoticiaDetalheClient({ noticia }: { noticia: Noticia }) 
           </div>
         )}
 
-        {/* Corpo do Texto */}
-        <div className="font-noticiatexrregular text-[#735A51] text-lg leading-relaxed space-y-6 font-serif mb-12">
-          <p className="whitespace-pre-wrap">{noticia.resumo}</p> 
+        {/* 👇 ALTERAÇÃO AQUI: Corpo do Texto com PortableText */}
+        <div className="font-noticiatexrregular text-[#735A51] text-lg leading-relaxed space-y-6 font-serif mb-12 prose prose-lg prose-[#735A51] max-w-none prose-p:mb-4 prose-a:text-[#592C1C] hover:prose-a:text-[#401D10]">
+          {noticia.conteudo ? (
+            <PortableText value={noticia.conteudo} />
+          ) : (
+            <p className="whitespace-pre-wrap">{noticia.resumo}</p>
+          )}
         </div>
 
         {/* =========================================

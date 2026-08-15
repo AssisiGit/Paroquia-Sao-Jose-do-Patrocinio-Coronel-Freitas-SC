@@ -3,12 +3,14 @@ import { client } from '../../../lib/sanity';
 import NoticiaDetalheClient from './NoticiaDetalheClient';
 
 async function getNoticia(slug: string) {
-const query = `*[_type == "noticia" && slug.current == $slug][0] {
+  // 👇 MUDANÇA AQUI: Alterado de "imagemPrincipal" para "imagemDestaque"
+  const query = `*[_type == "noticia" && slug.current == $slug][0] {
     _id,
     titulo,
     resumo,
+    conteudo, 
     dataPublicacao,
-    "imagemUrl": imagemPrincipal.asset->url,
+    "imagemUrl": imagemDestaque.asset->url, 
     videoUrl,
     "galeriaUrls": galeria[].asset->url
   }`;

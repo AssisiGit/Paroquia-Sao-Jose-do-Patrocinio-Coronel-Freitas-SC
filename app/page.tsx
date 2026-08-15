@@ -269,7 +269,7 @@ export default async function Home() {
           </div>
           
           <div className="mt-4 px-6 text-center sm:hidden">
-            <Link href="/calendario" className="inline-block px-6 py-3 bg-[#A6948D]/20 text-[#592C1C] font-ebgaramond rounded-xl active:scale-95 transition-transform text-sm w-full">
+            <Link href="/calendario" className="inline-block px-6 py-3 bg-[#A6948D]/20 text-[#592C1C] font-breeSerif rounded-xl active:scale-95 transition-transform text-base w-full">
               Ver calendário completo
             </Link>
           </div>
