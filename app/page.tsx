@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { format, isToday, isTomorrow } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale/pt-BR';
 // ATENÇÃO: Verifique se o caminho de importação do seu client do Sanity está correto
 import { client } from '../lib/sanity'; 
-import { urlFor } from '..//lib/image';
+import { urlFor } from '../lib/image';
 
 // =========================================
 // FUNÇÕES DE BUSCA NO SANITY
@@ -14,13 +14,13 @@ async function getUltimasNoticias() {
     titulo,
     resumo,
     dataPublicacao,
-    imagemDestaque, // Pegamos o objeto inteiro da imagem
+    imagemDestaque,
     "slug": slug.current
   }`;
   return client.fetch(query, {}, { next: { revalidate: 60 } });
 }
+
 async function getProximosEventos() {
-  // Pega eventos a partir de ontem para garantir que problemas de fuso horário não escondam os de hoje
   const query = `*[_type == "evento" && dataInicio >= $ontem] | order(dataInicio asc)[0...15] {
     _id,
     titulo,
@@ -36,7 +36,7 @@ async function getProximosEventos() {
   return client.fetch(query, { ontem: ontem.toISOString() }, { next: { revalidate: 60 } });
 }
 
-// Lógica de cores (A mesma do calendário)
+// Lógica de cores
 const obterCores = (tipo: string) => {
   const paleta: Record<string, any> = {
     missa: { bgCard: 'bg-[#8C6E49]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#F2F2F2]/90', badge: 'bg-[#401D10]/20 text-[#F2F2F2]' },
@@ -50,17 +50,44 @@ const obterCores = (tipo: string) => {
   return paleta[tipoFormatado] || { bgCard: 'bg-[#592C1C]', textCard: 'text-[#F2F2F2]', textHora: 'text-[#A6948D]', badge: 'bg-[#401D10] text-[#F2F2F2]' };
 };
 
+// 👇 NOVAS FUNÇÕES: Forçam o servidor (EUA) a calcular tudo no Fuso do Brasil
+const formatarHorario = (dataString: string) => {
+  if (!dataString) return '';
+  const data = new Date(dataString);
+  return new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Sao_Paulo' // Fuso do Brasil garantido
+  }).format(data);
+};
+
+const formatarDataBR = (data: Date) => {
+  return new Intl.DateTimeFormat('en-CA', { 
+    timeZone: 'America/Sao_Paulo', // Fuso do Brasil garantido
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(data);
+};
+
 export default async function Home() {
-  // Busca os dados simultaneamente para ser mais rápido
   const [noticias, todosEventos] = await Promise.all([
     getUltimasNoticias(),
     getProximosEventos()
   ]);
 
-  // Filtra apenas os eventos que acontecem Hoje ou Amanhã
+  // 👇 Lógica "Hoje/Amanhã" totalmente baseada no horário de Brasília
+  const dataHoje = new Date();
+  const dataAmanha = new Date();
+  dataAmanha.setDate(dataHoje.getDate() + 1);
+
+  const hojeBR = formatarDataBR(dataHoje);
+  const amanhaBR = formatarDataBR(dataAmanha);
+
+  // Filtra usando as datas brasileiras
   const eventosHojeAmanha = todosEventos.filter((evento: any) => {
-    const dataEvento = new Date(evento.dataInicio);
-    return isToday(dataEvento) || isTomorrow(dataEvento);
+    const eventoBR = formatarDataBR(new Date(evento.dataInicio));
+    return eventoBR === hojeBR || eventoBR === amanhaBR;
   });
 
   return (
@@ -70,7 +97,6 @@ export default async function Home() {
           HERO (FOTO METADE DA TELA COM SOMBRA)
       ========================================= */}
       <section className="relative w-full min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
-        {/* NÃO usamos lazy loading aqui pois é a imagem principal que já aparece ao abrir o site (LCP) */}
         <img 
           src="/index1.png" 
           alt="Fachada da Paróquia São José do Patrocínio" 
@@ -79,12 +105,10 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/5 to-transparent"></div>
         <div className="absolute inset-0 bg-black/10"></div>
 
-<div className="relative z-10 text-center px-4 md:px-6 w-full flex flex-col items-center justify-center -mt-90">
+        <div className="relative z-10 text-center px-4 md:px-6 w-full flex flex-col items-center justify-center -mt-90">
           <span className="text-[#F2F2F2] font-ebgaramond tracking-[0.2em] uppercase text-lg md:text-xl mb-4 block drop-shadow-md">
             Bem-vindo à
           </span>
-          
-          {/* CORREÇÃO: Usar font-manufacturing (tudo minúsculo, igual à variável do CSS) */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-merriweather font-bold text-white leading-tight drop-shadow-2xl max-w-4xl tracking-wider">
             Paróquia São José <br className="hidden md:block" />
             <span className="text-[#F2F2F2]">do Patrocínio</span>
@@ -123,7 +147,7 @@ export default async function Home() {
       </section>
 
       {/* =========================================
-          SEÇÃO 2: CARRETEL DE NOTÍCIAS (DADOS REAIS)
+          SEÇÃO 2: CARRETEL DE NOTÍCIAS
       ========================================= */}
       <section className="py-12 w-full max-w-7xl mx-auto overflow-hidden">
         <div className="flex justify-between items-end mb-8 px-6 md:px-8">
@@ -142,13 +166,11 @@ export default async function Home() {
                 href={`/noticias/${noticia.slug}`} 
                 className="snap-start shrink-0 w-[85vw] sm:w-[280px] md:w-[320px] bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#A6948D]/20 group flex flex-col"
               >
-                {/* Bloco da Imagem */}
                 <div className="h-40 md:h-48 bg-[#A6948D]/20 overflow-hidden relative">
                   <div className="absolute inset-0 bg-[#A6948D]/10 group-hover:bg-transparent transition-colors z-10"></div>
                   
                   {noticia.imagemDestaque ? (
                     <img 
-                      // Adicionado .format('webp') para super compressão e loading="lazy"
                       src={urlFor(noticia.imagemDestaque).width(600).format('webp').url()} 
                       alt={noticia.titulo} 
                       loading="lazy"
@@ -163,7 +185,6 @@ export default async function Home() {
                   )}
                 </div>
 
-                {/* Bloco do Texto */}
                 <div className="p-6 md:p-8 flex flex-col flex-1">
                   <time className="text-[11px] md:text-xs font-breeSerif font-bold text-[#A6948D] mb-2 uppercase tracking-wider">
                     {format(new Date(noticia.dataPublicacao), "dd 'de' MMM, yyyy", { locale: ptBR })}
@@ -187,7 +208,7 @@ export default async function Home() {
       </section>
 
       {/* =========================================
-          SEÇÃO 3: CARRETEL DE EVENTOS (DADOS REAIS)
+          SEÇÃO 3: CARRETEL DE EVENTOS
       ========================================= */}
       <section className="py-12 w-full max-w-7xl mx-auto overflow-hidden">
         <div className="bg-[#A6948D]/5 rounded-none md:rounded-[3rem] border-y md:border border-[#A6948D]/20 py-12 mb-12">
@@ -207,8 +228,10 @@ export default async function Home() {
               eventosHojeAmanha.map((evento: any) => {
                 const cores = obterCores(evento.tipo);
                 const isMissa = evento.tipo?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 'missa';
-                const dataEvt = new Date(evento.dataInicio);
-                const rotuloDia = isToday(dataEvt) ? 'Hoje' : 'Amanhã';
+                
+                // 👇 Determina "Hoje" ou "Amanhã" com base no Brasil
+                const eventoBR = formatarDataBR(new Date(evento.dataInicio));
+                const rotuloDia = eventoBR === hojeBR ? 'Hoje' : 'Amanhã';
 
                 return (
                   <div key={evento._id} className={`snap-start shrink-0 w-[80vw] sm:w-[260px] md:w-[300px] ${cores.bgCard} ${cores.textCard} p-6 rounded-3xl shadow-md transition-transform hover:-translate-y-1 duration-300`}>
@@ -218,7 +241,7 @@ export default async function Home() {
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="text-lg md:text-xl font-merriweather font-merriweather pr-2 md:pr-4 leading-tight">{evento.titulo}</h4>
                       <span className={`${cores.textHora} font-merriweather font-bold text-xl md:text-2xl tracking-tight`}>
-                        {format(dataEvt, 'HH:mm')}
+                        {formatarHorario(evento.dataInicio)}
                       </span>
                     </div>
                     <div className="space-y-1 font-noticiatexrregular text-xs md:text-base mt-4">
@@ -248,13 +271,11 @@ export default async function Home() {
         </div>
       </section>
 
-{/* =========================================
+      {/* =========================================
           SEÇÃO 4: LITURGIA, PASTORAIS E VELAS
       ========================================= */}
       <section className="py-6 md:py-12 px-6 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          
-          {/* BOX 1: LITURGIA DIÁRIA (Cores Escuras) */}
           <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-8 md:p-10 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center group hover:shadow-xl transition-all duration-300">
             <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-6 group-hover:scale-110 transition-transform">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
@@ -263,14 +284,11 @@ export default async function Home() {
             <p className="font-noticiatexrregular text-white/80 mb-8 leading-relaxed text-sm md:text-base flex-1">
               Acompanhe as leituras, o salmo e o evangelho do dia para nutrir sua espiritualidade com a Palavra de Deus.
             </p>
-            <Link 
-              href="/liturgia" 
-              className="mt-auto px-8 py-3.5 bg-white text-[#401D10] font-breeSerif font-bold text-center rounded-2xl hover:bg-[#F2F2F2] transition-colors w-full sm:w-auto text-sm md:text-lg">
+            <Link href="/liturgia" className="mt-auto px-8 py-3.5 bg-white text-[#401D10] font-breeSerif font-bold text-center rounded-2xl hover:bg-[#F2F2F2] transition-colors w-full sm:w-auto text-sm md:text-lg">
               Ler de Hoje
             </Link>
           </div>
 
-          {/* BOX 2: PASTORAIS E MOVIMENTOS (Fundo Claro para contraste) */}
           <div className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-[#A6948D]/20 flex flex-col items-center text-center group hover:shadow-xl transition-all duration-300">
             <div className="w-16 h-16 md:w-20 md:h-20 bg-[#401D10]/10 rounded-full flex items-center justify-center text-[#592C1C] mb-6 group-hover:scale-110 transition-transform">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
@@ -279,14 +297,11 @@ export default async function Home() {
             <p className="font-noticiatexrregular text-[#735A51] mb-8 leading-relaxed text-sm md:text-base flex-1">
               Conheça a nossa força viva! Descubra como servir, evangelizar e crescer em comunidade através dos nossos diversos grupos.
             </p>
-            <Link 
-              href="/pastorais" 
-              className="mt-auto px-8 py-3.5 bg-[#401D10] text-white font-breeSerif font-bold text-center rounded-2xl hover:bg-[#592C1C] transition-colors w-full sm:w-auto text-sm md:text-lg">
+            <Link href="/pastorais" className="mt-auto px-8 py-3.5 bg-[#401D10] text-white font-breeSerif font-bold text-center rounded-2xl hover:bg-[#592C1C] transition-colors w-full sm:w-auto text-sm md:text-lg">
               Conhecer Grupos
             </Link>
           </div>
 
-          {/* BOX 3: VELA VIRTUAL (Cores Escuras) */}
           <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-8 md:p-10 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center group hover:shadow-xl transition-all duration-300">
             <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-6 group-hover:scale-110 transition-transform">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" /></svg>
@@ -295,12 +310,9 @@ export default async function Home() {
             <p className="font-noticiatexrregular text-white/80 mb-8 leading-relaxed text-sm md:text-base flex-1">
               Acenda uma vela e deixe sua intenção em nosso site. Sua prece ficará acesa espiritualmente por 9 dias em nossa novena.
             </p>
-          <Link 
-            href="/velas" 
-            className="mt-auto px-8 py-3.5 bg-white text-[#401D10] font-breeSerif font-bold text-center rounded-2xl hover:bg-[#F2F2F2] transition-colors w-full sm:w-auto text-sm md:text-lg"
-          >
-            Acender Vela
-          </Link>
+            <Link href="/velas" className="mt-auto px-8 py-3.5 bg-white text-[#401D10] font-breeSerif font-bold text-center rounded-2xl hover:bg-[#F2F2F2] transition-colors w-full sm:w-auto text-sm md:text-lg">
+              Acender Vela
+            </Link>
           </div>
 
         </div>
@@ -314,14 +326,8 @@ export default async function Home() {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
           
-          {/* CAIXA 1: HISTÓRIA (Fica na Esquerda) */}
           <Link href="/sobre" className="relative h-full min-h-[320px] rounded-[2.5rem] overflow-hidden group shadow-sm">
-            <img 
-              src="/index2.png" 
-              alt="Igreja por dentro" 
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-            />
+            <img src="/index2.png" alt="Igreja por dentro" loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-merriweather font-bold text-white mb-2">Conheça nossa História</h3>
@@ -332,10 +338,7 @@ export default async function Home() {
             </div>
           </Link>
 
-          {/* CAIXA 2: SECRETARIA (Fica no Meio - Mantendo layout dividido) */}
           <div className="bg-gradient-to-br from-[#592C1C] to-[#401D10] p-6 xl:p-8 rounded-[2.5rem] shadow-sm flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-8 group hover:shadow-xl transition-all duration-300 h-full">
-            
-            {/* Título e Ícone */}
             <div className="flex flex-col items-center justify-center text-center shrink-0">
               <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-[#F2F2F2] mb-4 group-hover:scale-110 transition-transform">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
@@ -347,29 +350,24 @@ export default async function Home() {
               </a>
             </div>
 
-            {/* Informações detalhadas (Horário, Endereço, etc) */}
             <div className="text-white/80 leading-relaxed text-sm flex flex-col justify-center gap-4 flex-1 w-full text-center xl:text-left">
-              
               <div className="border-b border-white/10 pb-3">
                 <span className="block font-merriweather font-bold text-base text-white mb-1">🕗 Horário</span>
                 <span>08h às 11:30 | 13:30 às 17:30</span>
               </div>
-
               <div className="border-b border-white/10 pb-3">
                 <span className="block font-merriweather font-bold text-base text-white mb-1">📍 Endereço</span>
                 <span>R. Iguaçu, 130, Coronel Freitas - SC, 89840-000</span>
               </div>
-
               <div className="grid grid-cols-1 gap-3">
                 <div className="border-b xl:border-none border-white/10 pb-3 xl:pb-0">
                   <span className="block font-merriweather font-bold text-base text-white mb-1">📞 Contatos</span>
                   <span>Fixo: (49) 3347-0236  </span>
                   <span>Whats: (49) 98814-1513</span>
-               
                 </div>
                 <div>
                   <span className="block font-merriweather font-bold text-base text-white mb-1">✉️ E-mail</span>
-                  <a href="pcoronelfreitas@yahoo.com.br" className="hover:text-white hover:underline transition-colors break-words">
+                  <a href="mailto:pcoronelfreitas@yahoo.com.br" className="hover:text-white hover:underline transition-colors break-words">
                     pcoronelfreitas@yahoo.com.br
                   </a>
                 </div>
@@ -378,18 +376,11 @@ export default async function Home() {
               <a href="https://wa.me/5549988141513" target="_blank" rel="noopener noreferrer" className="mt-2 px-6 py-3 bg-white text-[#401D10] font-bold rounded-xl hover:bg-[#F2F2F2] transition-colors text-sm w-full shadow-sm xl:hidden text-center">
                 Chamar no WhatsApp
               </a>
-
             </div>
           </div>
 
-          {/* CAIXA 3: COMUNIDADES (Fica na Direita) */}
           <Link href="/comunidades" className="relative h-full min-h-[320px] rounded-[2.5rem] overflow-hidden group shadow-sm">
-            <img 
-              src="/index3.png" 
-              alt="Pessoas na igreja" 
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-            />
+            <img src="/index3.png" alt="Pessoas na igreja" loading="lazy" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#401D10] via-[#401D10]/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-merriweather font-bold text-white mb-2">Nossas Comunidades</h3>
