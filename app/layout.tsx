@@ -39,13 +39,7 @@ const breeSerif = localFont({
 export const metadata = {
   title: 'Paróquia São José do Patrocínio',
   description: 'Uma comunidade de fé, esperança e caridade.',
-  icons: {
-    // Colocamos o ?v=2 para FORÇAR o navegador a baixar de novo
-    icon: '/Tau2.png?v=2',
-    shortcut: '/Tau2.png?v=2',
-    apple: '/Tau2.png?v=2',
-  },
-}
+  };
 
 export default function RootLayout({
   children,
