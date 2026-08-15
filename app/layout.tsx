@@ -36,16 +36,16 @@ const breeSerif = localFont({
   display: 'swap',
 });
 
-// 👇 ADICIONADO AQUI: Bloco que avisa ao navegador qual é o ícone e o título do site
 export const metadata = {
   title: 'Paróquia São José do Patrocínio',
   description: 'Uma comunidade de fé, esperança e caridade.',
   icons: {
-    icon: '/Tau2.png',
-    shortcut: '/Tau2.png',
-    apple: '/Tau2.png',
+    // Colocamos o ?v=2 para FORÇAR o navegador a baixar de novo
+    icon: '/Tau2.png?v=2',
+    shortcut: '/Tau2.png?v=2',
+    apple: '/Tau2.png?v=2',
   },
-};
+}
 
 export default function RootLayout({
   children,
