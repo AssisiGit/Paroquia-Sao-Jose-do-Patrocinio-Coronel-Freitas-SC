@@ -362,7 +362,7 @@ export default async function Home() {
               </div>
               <div className="border-b border-white/10 pb-3">
                 <span className="block font-merriweather font-bold text-base text-white mb-1">📍 Endereço</span>
-                <span>A. Santa Catarina, 1043, Coronel Freitas - SC, 89840-000</span>
+                <span>Av. Santa Catarina, 1043, Coronel Freitas - SC, 89840-000</span>
               </div>
               <div className="grid grid-cols-1 gap-3">
                 <div className="border-b xl:border-none border-white/10 pb-3 xl:pb-0">
