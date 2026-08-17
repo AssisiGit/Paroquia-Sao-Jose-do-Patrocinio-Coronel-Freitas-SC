@@ -358,11 +358,11 @@ export default async function Home() {
             <div className="text-white/80 leading-relaxed text-sm flex flex-col justify-center gap-4 flex-1 w-full text-center xl:text-left">
               <div className="border-b border-white/10 pb-3">
                 <span className="block font-merriweather font-bold text-base text-white mb-1">🕗 Horário</span>
-                <span>08h às 11:30 | 13:30 às 17:30</span>
+                <span>08h às 11:30 | 13:00 às 17:30</span>
               </div>
               <div className="border-b border-white/10 pb-3">
                 <span className="block font-merriweather font-bold text-base text-white mb-1">📍 Endereço</span>
-                <span>R. Iguaçu, 130, Coronel Freitas - SC, 89840-000</span>
+                <span>A. Santa Catarina, 1043, Coronel Freitas - SC, 89840-000</span>
               </div>
               <div className="grid grid-cols-1 gap-3">
                 <div className="border-b xl:border-none border-white/10 pb-3 xl:pb-0">
